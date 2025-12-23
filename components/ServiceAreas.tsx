@@ -16,9 +16,9 @@ const ServiceAreas: React.FC = () => {
           <div className="relative">
             <div className="absolute top-0 left-0 w-72 h-72 bg-sky-400/20 rounded-full blur-3xl -z-10 animate-pulse"></div>
             <img
-              src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop"
-              className="rounded-[40px] shadow-2xl h-[500px] w-full object-cover grayscale opacity-80"
-              alt="Fleet readiness"
+              src="/images/coastal-clean-logo-section.jpg"
+              className="rounded-[40px] shadow-2xl h-[500px] w-full object-contain bg-[#152238]"
+              alt="Coastal Clean Logo"
             />
             <div className="absolute -bottom-8 -right-8 bg-zinc-900 p-8 rounded-3xl text-white shadow-2xl max-w-[280px]">
               <div className="text-4xl font-black mb-2 text-sky-500 tracking-tighter">100+</div>
