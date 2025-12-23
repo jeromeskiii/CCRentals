@@ -13,26 +13,6 @@ const services = [
     features: ["Kitchen & Bath Deep Clean", "Vacuum & Mop All Floors", "Dusting & Sanitization"]
   },
   {
-    title: "Linen Service",
-    description: "Professional laundering and hospital-grade pressing for that crisp, luxury hotel feel.",
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-      </svg>
-    ),
-    features: ["Eco-friendly Detergents", "High-heat Sanitization", "Towel Artistry Included"]
-  },
-  {
-    title: "Restocking & Inventory",
-    description: "We handle the essentials so you don't have to. Never run out of coffee or TP again.",
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 01-2 2H6a2 2 0 01-2-2m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-      </svg>
-    ),
-    features: ["Supply Audits", "Bulk Ordering Access", "Local Welcome Gifts"]
-  },
-  {
     title: "Emergency Response",
     description: "Last minute booking? Guest spill? Our rapid response team is on call 24/7.",
     icon: (
