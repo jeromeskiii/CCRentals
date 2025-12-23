@@ -56,7 +56,7 @@ const Services: React.FC = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+          className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto"
         >
           {services.map((service, idx) => (
             <motion.div
