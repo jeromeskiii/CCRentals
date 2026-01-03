@@ -22,9 +22,9 @@ const Navbar: React.FC = () => {
         </div>
 
         <div className={`hidden lg:flex items-center gap-8 text-sm font-semibold ${isScrolled ? 'text-zinc-600' : 'text-white/90'}`}>
-          <a href="#products" className="hover:text-sky-500 transition-colors">Rentals</a>
+          <a href="#inventory" className="hover:text-sky-500 transition-colors">Inventory</a>
+          <a href="#calculator" className="hover:text-sky-500 transition-colors">Calculator</a>
           <a href="#industries" className="hover:text-sky-500 transition-colors">Industries</a>
-          <a href="#estimate" className="hover:text-sky-500 transition-colors">Estimator</a>
           <a href="#areas" className="hover:text-sky-500 transition-colors">Service Areas</a>
         </div>
 

@@ -3,11 +3,12 @@ import React from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Services from './components/Services';
-import ProductCatalog from './components/ProductCatalog';
+import InventoryExplorer from './components/InventoryExplorer';
+import UnitCalculator from './components/UnitCalculator';
+import SiteMapPlanner from './components/SiteMapPlanner';
 import Industries from './components/Industries';
 import Process from './components/Process';
 import Testimonials from './components/Testimonials';
-import EstimationTool from './components/EstimationTool';
 import ServiceAreas from './components/ServiceAreas';
 import Footer from './components/Footer';
 import CTASection from './components/CTASection';
@@ -19,11 +20,12 @@ const App: React.FC = () => {
       <main className="flex-grow">
         <Hero />
         <Services />
-        <ProductCatalog />
+        <InventoryExplorer />
+        <UnitCalculator />
+        <SiteMapPlanner />
         <Industries />
         <Process />
         <Testimonials />
-        <EstimationTool />
         <ServiceAreas />
         <CTASection />
       </main>
