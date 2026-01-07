@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Types for the calculator
@@ -40,15 +40,15 @@ const UnitCalculator: React.FC = () => {
     const [fencingLength, setFencingLength] = useState(100);
     const [addAttendant, setAddAttendant] = useState(false);
 
-    // Calculate recommendations
-    const recommendations = useMemo<Recommendation[]>(() => {
+    // Calculate recommendations (removed useMemo - calculation is fast enough)
+    const recommendations: Recommendation[] = (() => {
         const recs: Recommendation[] = [];
 
         // Base calculation: Industry standard is 1 unit per 50 guests for 4 hours
         let baseUnits = Math.ceil(guestCount / 50);
 
         // Time multiplier
-        let timeHours = durationUnit === 'days' ? duration * 8 : duration;
+        const timeHours = durationUnit === 'days' ? duration * 8 : duration;
         if (timeHours > 4) {
             baseUnits = Math.ceil(baseUnits * (timeHours / 4));
         }
@@ -141,7 +141,7 @@ const UnitCalculator: React.FC = () => {
         }
 
         return recs;
-    }, [eventType, guestCount, duration, durationUnit, alcoholServed, adaRequired, premiumPreferred, addHandwash, addFencing, fencingLength, addAttendant]);
+    })();
 
     // Save recommendations to localStorage for SiteMapPlanner
     useEffect(() => {

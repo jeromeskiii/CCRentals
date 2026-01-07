@@ -1,9 +1,12 @@
-
 import React from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-const CTASection: React.FC = () => {
+interface CTASectionProps {
+  openLeadModal: (source: string) => void;
+}
+
+const CTASection: React.FC<CTASectionProps> = ({ openLeadModal }) => {
   React.useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
@@ -40,12 +43,18 @@ const CTASection: React.FC = () => {
               Don't settle for substandard sanitation. Join the thousands of project managers and event planners who trust Coastal Clean.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button className="w-full sm:w-auto px-12 py-6 bg-zinc-950 text-white font-black rounded-3xl hover:bg-zinc-900 transition-all text-xl shadow-2xl">
-                Request a Quick Quote
+              <button 
+                onClick={() => openLeadModal('cta_section')}
+                className="w-full sm:w-auto px-12 py-6 bg-zinc-950 text-white font-black rounded-3xl hover:bg-zinc-900 transition-all text-xl shadow-2xl"
+              >
+                Request Service
               </button>
-              <button className="w-full sm:w-auto px-12 py-6 bg-white text-sky-600 font-black rounded-3xl hover:bg-sky-50 transition-all text-xl">
+              <a 
+                href="tel:424-262-2906"
+                className="w-full sm:w-auto px-12 py-6 bg-white text-sky-600 font-black rounded-3xl hover:bg-sky-50 transition-all text-xl flex items-center justify-center"
+              >
                 Call (424) 262-2906
-              </button>
+              </a>
             </div>
             <p className="mt-8 text-sm text-sky-200 font-bold uppercase tracking-widest">
               Available 24/7 for Emergency Deployments

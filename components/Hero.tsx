@@ -1,11 +1,15 @@
-
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 
-const Hero: React.FC = () => {
+interface HeroProps {
+  openLeadModal: (source: string) => void;
+}
+
+const Hero: React.FC<HeroProps> = ({ openLeadModal }) => {
   const heroRef = useRef<HTMLElement>(null);
   const bgImageRef = useRef<HTMLImageElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [imageError, setImageError] = useState(false);
 
   const headlineWords = [
     { text: 'Professional' },
@@ -158,13 +162,20 @@ const Hero: React.FC = () => {
     <section ref={heroRef} className="relative min-h-[90vh] flex items-center overflow-hidden bg-zinc-900">
       {/* Background Image with Ken Burns Effect */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <img
-          ref={bgImageRef}
-          src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?q=80&w=2070&auto=format&fit=crop"
-          className="w-full h-full object-cover opacity-40 will-change-transform"
-          alt="Construction site"
-          style={{ transformOrigin: 'center center' }}
-        />
+        {imageError ? (
+          // Fallback gradient if image fails to load
+          <div className="w-full h-full bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900"></div>
+        ) : (
+          <img
+            ref={bgImageRef}
+            src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?q=80&w=2070&auto=format&fit=crop"
+            className="w-full h-full object-cover opacity-40 will-change-transform"
+            alt="Construction site"
+            style={{ transformOrigin: 'center center' }}
+            onError={() => setImageError(true)}
+            loading="eager"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-900/80 to-transparent"></div>
         {/* Animated gradient overlay */}
         <div className="absolute inset-0 hero-gradient-overlay"></div>
@@ -190,13 +201,19 @@ const Hero: React.FC = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-16 hero-cta">
-            <button className="px-8 py-4 bg-sky-600 text-white font-bold rounded-xl hover:bg-sky-500 transition-all shadow-xl shadow-sky-600/30 flex items-center justify-center gap-2">
-              Explore Inventory
+            <button 
+                onClick={() => openLeadModal('hero_primary')}
+                className="px-8 py-4 bg-sky-600 text-white font-bold rounded-xl hover:bg-sky-500 transition-all shadow-xl shadow-sky-600/30 flex items-center justify-center gap-2"
+            >
+              Request Service
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </button>
-            <button className="px-8 py-4 bg-white/10 text-white font-bold rounded-xl border border-white/20 hover:bg-white/20 transition-all backdrop-blur-sm">
-              Calculate Units
-            </button>
+            <a 
+                href="tel:424-262-2906"
+                className="px-8 py-4 bg-white/10 text-white font-bold rounded-xl border border-white/20 hover:bg-white/20 transition-all backdrop-blur-sm flex items-center justify-center"
+            >
+              Call Now
+            </a>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8 border-t border-white/10 pt-12">

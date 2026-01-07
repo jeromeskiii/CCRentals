@@ -1,7 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  openLeadModal: (source: string) => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ openLeadModal }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -30,8 +34,11 @@ const Navbar: React.FC = () => {
 
         <div className="flex items-center gap-4">
           <a href="tel:424-262-2906" className="hidden sm:block text-sm font-bold">(424) 262-2906</a>
-          <button className="px-6 py-2.5 bg-sky-600 text-white text-sm font-bold rounded-full hover:bg-sky-500 transition-all shadow-lg shadow-sky-600/20">
-            Request Quote
+          <button 
+            onClick={() => openLeadModal('navbar')}
+            className="px-6 py-2.5 bg-sky-600 text-white text-sm font-bold rounded-full hover:bg-sky-500 transition-all shadow-lg shadow-sky-600/20"
+          >
+            Request Service
           </button>
         </div>
       </div>
