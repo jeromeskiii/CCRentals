@@ -1,11 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { useOptionalModalManager } from '../../hooks/useModalManager';
 
 interface HeroProps {
-  openLeadModal: (source: string) => void;
+  openLeadModal?: (source: string) => void;
 }
 
-const Hero: React.FC<HeroProps> = ({ openLeadModal }) => {
+const Hero: React.FC<HeroProps> = ({ openLeadModal: openLeadModalProp }) => {
+  const modalManager = useOptionalModalManager();
+  const openLeadModal =
+    openLeadModalProp || ((source: string) => modalManager?.openModal('service-request', { source }));
   const heroRef = useRef<HTMLElement>(null);
   const bgImageRef = useRef<HTMLImageElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);

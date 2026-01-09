@@ -9,9 +9,11 @@ This document covers all the interactive features added to enhance user engageme
 ## 📦 New Components Created
 
 ### 1. QuoteCalculator.tsx
+
 **Purpose**: Real-time pricing calculator with instant estimates
 
 **Features**:
+
 - Service type selection (6 different options)
 - Unit quantity adjuster (+ / - buttons)
 - Duration slider (1-90 days)
@@ -22,6 +24,7 @@ This document covers all the interactive features added to enhance user engageme
 - "Request Quote" CTA integration
 
 **Props**:
+
 ```typescript
 interface QuoteCalculatorProps {
   onRequestQuote?: (details: QuoteDetails) => void;
@@ -44,6 +47,7 @@ export interface QuoteDetails {
 ```
 
 **Pricing Logic**:
+
 - Base price (1 unit, 1 day)
 - Additional days: `perDayRate × (duration - 1)`
 - Additional units: `perUnitRate × (units - 1)`
@@ -52,9 +56,11 @@ export interface QuoteDetails {
 ---
 
 ### 2. EnhancedQuoteModal.tsx
+
 **Purpose**: Multi-step quote request flow with comprehensive data collection
 
 **Features**:
+
 - 3-step wizard (Service → Details → Contact)
 - Progress indicator
 - Pre-fill support from calculator
@@ -67,6 +73,7 @@ export interface QuoteDetails {
 - Supabase integration
 
 **Steps**:
+
 1. **Service Selection**
    - Visual service type picker
    - Unit quantity
@@ -87,6 +94,7 @@ export interface QuoteDetails {
    - Quote summary display
 
 **Props**:
+
 ```typescript
 interface EnhancedQuoteModalProps {
   open: boolean;
@@ -98,9 +106,11 @@ interface EnhancedQuoteModalProps {
 ---
 
 ### 3. ServiceComparison.tsx
+
 **Purpose**: Side-by-side service comparison tool
 
 **Features**:
+
 - Select up to 3 services to compare
 - Visual service cards with icons
 - Feature comparison matrix
@@ -109,6 +119,7 @@ interface EnhancedQuoteModalProps {
 - Select service CTA
 
 **Service Data**:
+
 ```typescript
 interface ServiceOption {
   name: string;
@@ -121,6 +132,7 @@ interface ServiceOption {
 ```
 
 **Services Included**:
+
 1. Standard Portable Toilet - $125
 2. Deluxe Unit with Sink - $175
 3. ADA Compliant Units - $195
@@ -131,9 +143,11 @@ interface ServiceOption {
 ---
 
 ### 4. BookingCalendar.tsx
+
 **Purpose**: Interactive date range picker for rental bookings
 
 **Features**:
+
 - Month navigation
 - Date range selection (start → end)
 - Visual range highlighting
@@ -145,6 +159,7 @@ interface ServiceOption {
 - Responsive design
 
 **Props**:
+
 ```typescript
 interface BookingCalendarProps {
   onDateSelect?: (startDate: Date, endDate: Date) => void;
@@ -153,6 +168,7 @@ interface BookingCalendarProps {
 ```
 
 **User Flow**:
+
 1. Click start date
 2. Click end date (earlier dates auto-swap)
 3. See visual range highlight
@@ -162,9 +178,11 @@ interface BookingCalendarProps {
 ---
 
 ### 5. InteractiveFeaturesPage.tsx
+
 **Purpose**: Unified page showcasing all interactive tools
 
 **Features**:
+
 - Sticky tab navigation
 - Hero section with CTAs
 - Tool switcher (Calculator, Comparison, Calendar)
@@ -173,6 +191,7 @@ interface BookingCalendarProps {
 - Modal integrations
 
 **Tabs**:
+
 - 💰 Quote Calculator
 - ⚖️ Compare Services
 - 📅 Book Dates
@@ -184,22 +203,26 @@ interface BookingCalendarProps {
 All components follow the established design system:
 
 ### Colors
+
 - Primary actions: `bg-primary text-primary-foreground`
 - Secondary actions: `bg-secondary text-secondary-foreground`
 - Borders: `border-border`
 - Cards: `bg-card`
 
 ### Typography
+
 - Headings: `font-bold text-foreground`
 - Body: `text-muted-foreground`
 - Small text: `text-xs` or `text-sm`
 
 ### Spacing
+
 - Sections: `py-16 sm:py-20 md:py-24`
 - Cards: `p-6 sm:p-8`
 - Gaps: `gap-4 sm:gap-6`
 
 ### Animations
+
 - Hover: `hover:scale-105 transition-all`
 - Active: `active:scale-95`
 - Framer Motion for page transitions
@@ -211,16 +234,19 @@ All components follow the established design system:
 ### With Existing Components
 
 **ServiceRequestModal** (existing):
+
 - Quick contact form
 - Emergency requests
 - Simple service selection
 
 **EnhancedQuoteModal** (new):
+
 - Detailed quote requests
 - Multi-step flow
 - Event planning
 
 **Usage**:
+
 ```typescript
 const [quoteModalOpen, setQuoteModalOpen] = useState(false);
 const [prefilledQuote, setPrefilledQuote] = useState<QuoteDetails | null>(null);
@@ -244,6 +270,7 @@ const handleRequestQuote = (details: QuoteDetails) => {
 ## 📊 Data Flow
 
 ### Quote Calculator → Enhanced Modal
+
 ```
 User adjusts calculator
   ↓
@@ -259,6 +286,7 @@ Submit to Supabase
 ```
 
 ### Service Comparison → Enhanced Modal
+
 ```
 User compares services
   ↓
@@ -270,6 +298,7 @@ User completes quote flow
 ```
 
 ### Booking Calendar → Quote Modal
+
 ```
 User selects date range
   ↓
@@ -285,14 +314,17 @@ Pre-fill dates in modal
 ## 🔧 Technical Implementation
 
 ### State Management
+
 All components use React `useState` for local state. No global state library required.
 
 ### Form Validation
+
 - Using existing `validation.ts` schemas
 - Zod for type-safe validation
 - Field-level error display
 
 ### API Integration
+
 ```typescript
 import { api } from '../lib/api';
 
@@ -304,11 +336,12 @@ await api.leads.create({
   service_type: serviceType,
   notes: `Detailed quote request...`,
   source: 'enhanced_quote_modal',
-  status: 'new'
+  status: 'new',
 });
 ```
 
 ### Date Handling
+
 ```typescript
 // Minimum date (tomorrow)
 const minDate = new Date();
@@ -318,9 +351,8 @@ minDate.setDate(minDate.getDate() + 1);
 const formattedDate = minDate.toISOString().split('T')[0];
 
 // Calculate days between
-const daysBetween = Math.ceil(
-  Math.abs(endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-) + 1;
+const daysBetween =
+  Math.ceil(Math.abs(endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 ```
 
 ---
@@ -330,11 +362,13 @@ const daysBetween = Math.ceil(
 All components are fully responsive:
 
 ### Breakpoints
+
 - Mobile: 320px - 640px (base styles)
 - Tablet: 640px+ (sm:)
 - Desktop: 1024px+ (lg:)
 
 ### Mobile Optimizations
+
 - Calculator: Stacked layout, larger touch targets
 - Comparison: Horizontal scroll for table
 - Calendar: Optimized grid spacing
@@ -345,16 +379,19 @@ All components are fully responsive:
 ## ♿ Accessibility Features
 
 ### Keyboard Navigation
+
 - Tab through all interactive elements
 - Enter/Space to activate buttons
 - Arrow keys for month navigation (calendar)
 
 ### Screen Readers
+
 - Semantic HTML (`<button>`, `<label>`, etc.)
 - ARIA labels where needed
 - Form field associations
 
 ### Visual Indicators
+
 - Focus rings on all interactive elements
 - High contrast ratios
 - Clear hover states
@@ -364,17 +401,20 @@ All components are fully responsive:
 ## 🚀 Performance Optimizations
 
 ### Component Lazy Loading
+
 ```typescript
 // Future implementation
 const QuoteCalculator = lazy(() => import('./QuoteCalculator'));
 ```
 
 ### Animation Performance
+
 - Using Framer Motion with `will-change`
 - Hardware-accelerated transforms
 - AnimatePresence for exit animations
 
 ### Bundle Size
+
 - Framer Motion already in use (no new dependencies)
 - Date logic uses native `Date` object
 - No external calendar libraries
@@ -386,21 +426,25 @@ const QuoteCalculator = lazy(() => import('./QuoteCalculator'));
 ### Psychological Triggers
 
 **Calculator**:
+
 - Instant gratification (real-time pricing)
 - Transparency (breakdown visible)
 - Free delivery threshold (encourages more units)
 
 **Comparison**:
+
 - Social proof (best for X)
 - Clear differentiation
 - Easy decision-making
 
 **Calendar**:
+
 - Visual availability
 - Commitment device (selecting dates)
 - Urgency (see blocked dates)
 
 ### CTA Placement
+
 - Calculator: "Request This Quote" (primary action)
 - Comparison: "Select" on each service
 - Calendar: Integrated with quote flow
@@ -425,7 +469,9 @@ analytics.track('Booking Calendar - Viewed');
 analytics.track('Booking Calendar - Date Range Selected', { days: daysBetween });
 
 analytics.track('Enhanced Quote Modal - Opened', { source: 'calculator' | 'comparison' });
-analytics.track('Enhanced Quote Modal - Step Completed', { step: 'service' | 'details' | 'contact' });
+analytics.track('Enhanced Quote Modal - Step Completed', {
+  step: 'service' | 'details' | 'contact',
+});
 analytics.track('Enhanced Quote Modal - Quote Submitted');
 ```
 
@@ -434,6 +480,7 @@ analytics.track('Enhanced Quote Modal - Quote Submitted');
 ## 🧪 Testing Checklist
 
 ### Functionality
+
 - [ ] Calculator calculates correctly
 - [ ] Multi-step modal progresses properly
 - [ ] Comparison shows/hides services
@@ -442,6 +489,7 @@ analytics.track('Enhanced Quote Modal - Quote Submitted');
 - [ ] Supabase submission succeeds
 
 ### UX
+
 - [ ] Smooth animations
 - [ ] Clear error messages
 - [ ] Success confirmations
@@ -449,12 +497,14 @@ analytics.track('Enhanced Quote Modal - Quote Submitted');
 - [ ] Disabled states
 
 ### Responsive
+
 - [ ] Works on 320px (iPhone SE)
 - [ ] Works on 768px (iPad)
 - [ ] Works on 1920px (Desktop)
 - [ ] Touch targets ≥44px on mobile
 
 ### Accessibility
+
 - [ ] Keyboard navigation
 - [ ] Screen reader friendly
 - [ ] Focus indicators visible
@@ -465,6 +515,7 @@ analytics.track('Enhanced Quote Modal - Quote Submitted');
 ## 🔜 Future Enhancements
 
 ### Phase 2 Features
+
 1. **Availability API Integration**
    - Real-time availability checking
    - Automatic date blocking
@@ -501,6 +552,7 @@ analytics.track('Enhanced Quote Modal - Quote Submitted');
 ## 📋 Usage Examples
 
 ### Simple Calculator Integration
+
 ```typescript
 import QuoteCalculator from './components/QuoteCalculator';
 
@@ -515,6 +567,7 @@ function MyPage() {
 ```
 
 ### Full Interactive Page
+
 ```typescript
 import InteractiveFeaturesPage from './components/InteractiveFeaturesPage';
 
@@ -523,13 +576,14 @@ import InteractiveFeaturesPage from './components/InteractiveFeaturesPage';
 ```
 
 ### Standalone Comparison
+
 ```typescript
 import ServiceComparison from './components/ServiceComparison';
 
 function ComparePage() {
   return (
     <div className="container mx-auto py-20">
-      <ServiceComparison 
+      <ServiceComparison
         onSelectService={(service) => console.log('Selected:', service)}
       />
     </div>
@@ -542,28 +596,32 @@ function ComparePage() {
 ## 🎨 Customization Guide
 
 ### Updating Pricing
+
 Edit `QuoteCalculator.tsx`:
+
 ```typescript
 const pricingTiers: Record<string, PricingTier> = {
   'Standard Portable Toilet': {
-    basePrice: 125,      // Change here
-    perDayRate: 15,       // Change here
-    perUnitRate: 125,     // Change here
+    basePrice: 125, // Change here
+    perDayRate: 15, // Change here
+    perUnitRate: 125, // Change here
     // ...
-  }
+  },
 };
 ```
 
 ### Adding Services
+
 1. Update `pricingTiers` in `QuoteCalculator.tsx`
 2. Update `services` array in `ServiceComparison.tsx`
 3. Update `serviceOptions` in `ServiceRequestModal.tsx`
 4. Update `serviceTypes` in `EnhancedQuoteModal.tsx`
 
 ### Changing Delivery Fee Logic
+
 ```typescript
 // In QuoteCalculator.tsx
-const deliveryFee = units >= 5 ? 0 : 75;  // Modify threshold/fee
+const deliveryFee = units >= 5 ? 0 : 75; // Modify threshold/fee
 ```
 
 ---
@@ -571,21 +629,25 @@ const deliveryFee = units >= 5 ? 0 : 75;  // Modify threshold/fee
 ## 🐛 Troubleshooting
 
 ### Calculator Not Updating
+
 - Check that `useState` is properly initialized
 - Verify `calculateQuote()` is being called
 - Console.log the `quote` object
 
 ### Modal Not Opening
+
 - Ensure `open` prop is true
 - Check z-index conflicts
 - Verify AnimatePresence is wrapping
 
 ### Date Selection Not Working
+
 - Check that dates aren't in `blockedDates`
 - Verify `isDateInPast()` logic
 - Test with console.log in `handleDateClick`
 
 ### Form Not Submitting
+
 - Check Supabase connection
 - Verify validation schema
 - Look for console errors

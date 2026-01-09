@@ -24,13 +24,13 @@ export default AppTemplate;
 
 The template uses OKLCH color space for consistent, accessible colors:
 
-| Variable | Value | Usage |
-|----------|-------|-------|
-| `--primary` | `oklch(0.7227 0.1920 149.5793)` | Teal/aqua brand color |
-| `--background` | `oklch(0.9751 0.0127 244.2507)` | Very light blue-gray |
-| `--foreground` | `oklch(0.3729 0.0306 259.7328)` | Dark text |
-| `--card` | `oklch(1.0000 0 0)` | Pure white cards |
-| `--radius` | `0.5rem` | Consistent border radius |
+| Variable       | Value                           | Usage                    |
+| -------------- | ------------------------------- | ------------------------ |
+| `--primary`    | `oklch(0.7227 0.1920 149.5793)` | Teal/aqua brand color    |
+| `--background` | `oklch(0.9751 0.0127 244.2507)` | Very light blue-gray     |
+| `--foreground` | `oklch(0.3729 0.0306 259.7328)` | Dark text                |
+| `--card`       | `oklch(1.0000 0 0)`             | Pure white cards         |
+| `--radius`     | `0.5rem`                        | Consistent border radius |
 
 ### Typography
 
@@ -43,26 +43,26 @@ The template uses OKLCH color space for consistent, accessible colors:
 Subtle shadows for depth without visual noise:
 
 ```css
---shadow-sm: 0px 1px 2px hsl(0 0% 0% / 0.10);
---shadow: 0px 4px 8px -1px hsl(0 0% 0% / 0.10);
---shadow-md: 0px 4px 8px -1px hsl(0 0% 0% / 0.10), 0px 2px 4px -2px hsl(0 0% 0% / 0.10);
---shadow-lg: 0px 4px 8px -1px hsl(0 0% 0% / 0.10), 0px 4px 6px -2px hsl(0 0% 0% / 0.10);
+--shadow-sm: 0px 1px 2px hsl(0 0% 0% / 0.1);
+--shadow: 0px 4px 8px -1px hsl(0 0% 0% / 0.1);
+--shadow-md: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 2px 4px -2px hsl(0 0% 0% / 0.1);
+--shadow-lg: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 4px 6px -2px hsl(0 0% 0% / 0.1);
 ```
 
 ## Component Library
 
 ### Template Components (`components/template/`)
 
-| Component | Purpose | Props |
-|-----------|---------|-------|
-| `Hero.tsx` | Main hero section with animations | `openLeadModal(source)` |
-| `Navbar.tsx` | Navigation with scroll effects | `openLeadModal(source)` |
-| `ServicesInventory.tsx` | Services + rental inventory | None |
-| `TrustSignals.tsx` | Certifications, metrics, trust | None |
-| `Reviews.tsx` | Testimonials with stats | None |
-| `ServiceAreas.tsx` | Coverage map and areas | None |
-| `CTASection.tsx` | Final call-to-action | `openLeadModal(source)` |
-| `Footer.tsx` | Site footer with links | None |
+| Component               | Purpose                           | Props                   |
+| ----------------------- | --------------------------------- | ----------------------- |
+| `Hero.tsx`              | Main hero section with animations | `openLeadModal(source)` |
+| `Navbar.tsx`            | Navigation with scroll effects    | `openLeadModal(source)` |
+| `ServicesInventory.tsx` | Services + rental inventory       | None                    |
+| `TrustSignals.tsx`      | Certifications, metrics, trust    | None                    |
+| `Reviews.tsx`           | Testimonials with stats           | None                    |
+| `ServiceAreas.tsx`      | Coverage map and areas            | None                    |
+| `CTASection.tsx`        | Final call-to-action              | `openLeadModal(source)` |
+| `Footer.tsx`            | Site footer with links            | None                    |
 
 ### Animation
 
@@ -77,7 +77,7 @@ import { motion } from 'framer-motion';
   viewport={{ once: true }}
 >
   Content
-</motion.div>
+</motion.div>;
 ```
 
 ## Content Structure
@@ -112,6 +112,7 @@ Cities: Long Beach, Malibu, Anaheim, Huntington Beach, Inland Empire
 ### Reviews
 
 Featured testimonials:
+
 - Marcello D. (Superhost): "Level of detail is unmatched..."
 - Elena R. (Property Manager): "Reliability was my biggest pain point..."
 
@@ -123,7 +124,7 @@ Update in `index.css`:
 
 ```css
 :root {
-  --primary: oklch(0.7227 0.1920 149.5793); /* Change this for different brand color */
+  --primary: oklch(0.7227 0.192 149.5793); /* Change this for different brand color */
 }
 ```
 
@@ -133,15 +134,16 @@ Update in `index.css`:
 
 ```css
 :root {
-  --font-sans: "Your Font", sans-serif;
-  --font-serif: "Your Font", serif;
-  --font-mono: "Your Font", monospace;
+  --font-sans: 'Your Font', sans-serif;
+  --font-serif: 'Your Font', serif;
+  --font-mono: 'Your Font', monospace;
 }
 ```
 
 ### Images
 
 Replace placeholder images in components:
+
 - Hero: `Hero.tsx` line 54 - construction site image
 - ServiceAreas: `ServiceAreas.tsx` - SVG map visualization
 
@@ -183,6 +185,7 @@ The template uses the existing `ServiceRequestModal` component. Ensure it's prop
 ### Animations
 
 The template uses:
+
 - **Framer Motion** for scroll animations
 - **GSAP** for Hero parallax effects (existing code)
 

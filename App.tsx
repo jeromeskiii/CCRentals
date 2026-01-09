@@ -54,7 +54,7 @@ const App: React.FC = () => {
         </ErrorBoundary>
 
         <ErrorBoundary fallback={<ReviewsFallback />}>
-          <Reviews />
+          <Reviews openLeadModal={openLeadModal} />
         </ErrorBoundary>
 
         <ErrorBoundary fallback={<ServiceAreasFallback />}>
@@ -71,11 +71,7 @@ const App: React.FC = () => {
       </ErrorBoundary>
 
       <ErrorBoundary fallback={<ModalFallback onClose={closeLeadModal} />}>
-        <ServiceRequestModal
-          open={leadModalOpen}
-          onClose={closeLeadModal}
-          source={leadSource}
-        />
+        <ServiceRequestModal open={leadModalOpen} onClose={closeLeadModal} source={leadSource} />
       </ErrorBoundary>
     </div>
   );

@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useOptionalModalManager } from '../../hooks/useModalManager';
 
 interface NavbarProps {
-  openLeadModal: (source: string) => void;
+  openLeadModal?: (source: string) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ openLeadModal }) => {
+const Navbar: React.FC<NavbarProps> = ({ openLeadModal: openLeadModalProp }) => {
+  const modalManager = useOptionalModalManager();
+  const openLeadModal =
+    openLeadModalProp || ((source: string) => modalManager?.openModal('service-request', { source }));
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 

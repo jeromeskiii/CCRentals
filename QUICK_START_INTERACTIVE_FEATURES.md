@@ -1,6 +1,7 @@
 # 🚀 Quick Start Guide - Interactive Features
 
 ## Overview
+
 Get your new interactive features up and running in 5 minutes!
 
 ---
@@ -8,6 +9,7 @@ Get your new interactive features up and running in 5 minutes!
 ## ✅ What's Been Added
 
 5 new production-ready components:
+
 1. **QuoteCalculator** - Real-time pricing calculator
 2. **EnhancedQuoteModal** - Multi-step quote request form
 3. **ServiceComparison** - Side-by-side service comparison
@@ -19,6 +21,7 @@ Get your new interactive features up and running in 5 minutes!
 ## 🎯 Option 1: Full Interactive Page (Recommended)
 
 ### Step 1: Add to Navigation
+
 Update your `Navbar.tsx` component:
 
 ```typescript
@@ -37,6 +40,7 @@ Update your `Navbar.tsx` component:
 ```
 
 ### Step 2: View the Demo
+
 Simply open in your browser:
 
 ```bash
@@ -57,6 +61,7 @@ export default InteractiveFeaturesDemo;
 ```
 
 ### Step 3: Set Up Routing (If needed)
+
 If you're using React Router:
 
 ```typescript
@@ -83,6 +88,7 @@ export default AppRouter;
 ## 🎯 Option 2: Individual Component Integration
 
 ### Just the Calculator
+
 Add to any page for instant pricing:
 
 ```typescript
@@ -100,6 +106,7 @@ function YourPage() {
 ```
 
 ### Just the Comparison Tool
+
 Perfect for a "Services" page:
 
 ```typescript
@@ -120,6 +127,7 @@ function ServicesPage() {
 ```
 
 ### Just the Calendar
+
 For a "Book Now" page:
 
 ```typescript
@@ -146,6 +154,7 @@ function BookingPage() {
 ## 🔗 Component Integrations
 
 ### Calculator → Quote Modal
+
 Pre-fill the modal with calculator data:
 
 ```typescript
@@ -175,6 +184,7 @@ function MyPage() {
 ```
 
 ### Comparison → Quote Modal
+
 Let users select from comparison and request quote:
 
 ```typescript
@@ -245,35 +255,40 @@ function MyPage() {
 ## 🎨 Customization
 
 ### Change Pricing
+
 Edit `components/QuoteCalculator.tsx`:
 
 ```typescript
 const pricingTiers: Record<string, PricingTier> = {
   'Standard Portable Toilet': {
     name: 'Standard Portable Toilet',
-    basePrice: 125,        // ← Change base price
-    perDayRate: 15,        // ← Change daily rate
-    perUnitRate: 125,      // ← Change per-unit rate
+    basePrice: 125, // ← Change base price
+    perDayRate: 15, // ← Change daily rate
+    perUnitRate: 125, // ← Change per-unit rate
     description: '...',
-    features: ['...']
+    features: ['...'],
   },
   // ... other services
 };
 ```
 
 ### Change Delivery Fee Logic
+
 ```typescript
 // In calculateQuote() function
-const deliveryFee = units >= 5 ? 0 : 75;  // ← Modify threshold/amount
+const deliveryFee = units >= 5 ? 0 : 75; // ← Modify threshold/amount
 ```
 
 ### Add New Services
+
 1. Add to `pricingTiers` in QuoteCalculator.tsx
 2. Add to `services` array in ServiceComparison.tsx
 3. Add to `serviceTypes` in EnhancedQuoteModal.tsx
 
 ### Style Customization
+
 All components use Tailwind and follow your theme:
+
 - Primary color: `bg-primary text-primary-foreground`
 - Secondary: `bg-secondary text-secondary-foreground`
 - Cards: `bg-card border-border`
@@ -283,6 +298,7 @@ All components use Tailwind and follow your theme:
 ## ✅ Verify It's Working
 
 ### Test Calculator
+
 1. Open the page
 2. Select a service type
 3. Adjust units and duration
@@ -291,18 +307,21 @@ All components use Tailwind and follow your theme:
 6. Modal should open with pre-filled data
 
 ### Test Comparison
+
 1. Click on 2-3 service cards
 2. See feature comparison matrix
 3. Click "Select" on a service
 4. Modal should open
 
 ### Test Calendar
+
 1. Click a start date
 2. Click an end date
 3. See range highlighted
 4. See days counter update
 
 ### Test Modal Submission
+
 1. Fill out all steps
 2. Submit form
 3. Check Supabase `leads` table
@@ -313,6 +332,7 @@ All components use Tailwind and follow your theme:
 ## 🐛 Troubleshooting
 
 ### Modal Not Opening
+
 ```typescript
 // Check state
 console.log('Modal open state:', modalOpen);
@@ -324,6 +344,7 @@ console.log('Modal open state:', modalOpen);
 ```
 
 ### Calculator Not Calculating
+
 ```typescript
 // Add logging in QuoteCalculator.tsx
 const quote = calculateQuote();
@@ -331,6 +352,7 @@ console.log('Calculated quote:', quote);
 ```
 
 ### Supabase Errors
+
 ```typescript
 // Check connection
 import { supabase } from './lib/supabase';
@@ -341,6 +363,7 @@ console.log('Supabase test:', { data, error });
 ```
 
 ### TypeScript Errors
+
 ```bash
 # Install types if missing
 npm install --save-dev @types/react @types/react-dom
@@ -355,6 +378,7 @@ npm install
 ## 📝 Common Modifications
 
 ### Add Phone Number Field to Calculator
+
 ```typescript
 // In QuoteCalculator.tsx, add state
 const [phoneNumber, setPhoneNumber] = useState('');
@@ -376,6 +400,7 @@ onRequestQuote?.({
 ```
 
 ### Add Company Field
+
 ```typescript
 // Already included in EnhancedQuoteModal!
 // Just optional - make it required if needed:
@@ -390,6 +415,7 @@ onRequestQuote?.({
 ```
 
 ### Block Specific Dates in Calendar
+
 ```typescript
 // Create blocked dates array
 const blockedDates = [
@@ -407,6 +433,7 @@ const blockedDates = [
 ## 🎯 Next Steps
 
 1. **Test in Development**
+
    ```bash
    npm run dev
    ```
@@ -418,6 +445,7 @@ const blockedDates = [
    Track quote requests, service selections, etc.
 
 4. **Deploy to Production**
+
    ```bash
    npm run build
    # Deploy build folder to your host
@@ -433,6 +461,7 @@ const blockedDates = [
 ## 📚 Full Documentation
 
 For detailed information, see:
+
 - `INTERACTIVE_FEATURES_GUIDE.md` - Complete technical guide
 - `FEATURE_ADDITIONS_SUMMARY.md` - Business impact & features
 - Component files - Inline documentation
@@ -441,7 +470,7 @@ For detailed information, see:
 
 ## 🎉 You're All Set!
 
-Your interactive features are ready to drive conversions! 
+Your interactive features are ready to drive conversions!
 
 **Questions?** Check the documentation or review the component code.
 

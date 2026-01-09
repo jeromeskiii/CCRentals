@@ -10,8 +10,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/1x3TMM-a5IkGp0QWSqnp8OI
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
-
+**Prerequisites:** Node.js
 
 1. Install dependencies:
    `npm install`
@@ -24,6 +23,7 @@ View your app in AI Studio: https://ai.studio/apps/drive/1x3TMM-a5IkGp0QWSqnp8OI
 ### Accessibility (A11y)
 
 We use a custom hook `useModalA11y` to standardize modal accessibility across the application. This hook handles:
+
 - **Focus Trapping**: Keeps focus within the modal while it's open
 - **Focus Restoration**: Returns focus to the triggering element when closed
 - **Escape Key**: Closes the modal when the Escape key is pressed
@@ -49,6 +49,7 @@ const MyModal = ({ open, onClose }) => {
 ```
 
 This pattern is currently implemented in:
+
 - `ServiceRequestModal`
 - `ConfirmationModal`
 - `EnhancedQuoteModal`

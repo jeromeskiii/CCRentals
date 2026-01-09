@@ -1,11 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useOptionalModalManager } from '../../hooks/useModalManager';
 
 interface CTASectionProps {
-  openLeadModal: (source: string) => void;
+  openLeadModal?: (source: string) => void;
 }
 
-const CTASection: React.FC<CTASectionProps> = ({ openLeadModal }) => {
+const CTASection: React.FC<CTASectionProps> = ({ openLeadModal: openLeadModalProp }) => {
+  const modalManager = useOptionalModalManager();
+  const openLeadModal =
+    openLeadModalProp || ((source: string) => modalManager?.openModal('service-request', { source }));
   return (
     <section className="py-16 sm:py-20 md:py-24 bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 sm:px-6">

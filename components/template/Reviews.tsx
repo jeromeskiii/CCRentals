@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { useOptionalModalManager } from '../../hooks/useModalManager';
 
 const reviews = [
   {
@@ -39,10 +40,13 @@ const stats = [
 ];
 
 interface ReviewsProps {
-  openLeadModal: (source: string) => void;
+  openLeadModal?: (source: string) => void;
 }
 
-const Reviews: React.FC<ReviewsProps> = ({ openLeadModal }) => {
+const Reviews: React.FC<ReviewsProps> = ({ openLeadModal: openLeadModalProp }) => {
+  const modalManager = useOptionalModalManager();
+  const openLeadModal =
+    openLeadModalProp || ((source: string) => modalManager?.openModal('service-request', { source }));
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, amount: 0.3 });
 

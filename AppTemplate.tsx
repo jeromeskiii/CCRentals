@@ -1,9 +1,9 @@
 /**
  * CCRentals Website Template
- * 
+ *
  * This is the complete website template using the new design system.
  * Drop this into your project and integrate with your existing services.
- * 
+ *
  * Theme: Clean, trustworthy app-style design
  * Colors: Teal/aqua primary, light backgrounds, subtle shadows
  * Typography: DM Sans, Lora, IBM Plex Mono
@@ -43,16 +43,12 @@ const AppTemplate: React.FC = () => {
           <Hero openLeadModal={openLeadModal} />
           <ServicesInventory />
           <TrustSignals />
-          <Reviews />
+          <Reviews openLeadModal={openLeadModal} />
           <ServiceAreas />
           <CTASection openLeadModal={openLeadModal} />
         </main>
         <Footer />
-        <ServiceRequestModal
-          open={leadModalOpen}
-          onClose={closeLeadModal}
-          source={leadSource}
-        />
+        <ServiceRequestModal open={leadModalOpen} onClose={closeLeadModal} source={leadSource} />
       </div>
     </ErrorBoundary>
   );

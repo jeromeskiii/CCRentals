@@ -3,6 +3,7 @@
 ## 🎭 Animation & Interaction Patterns
 
 ### Button Interactions
+
 ```
 Default State:
   - bg-primary
@@ -24,6 +25,7 @@ Timing:
 ### Card Hover Effects
 
 **Service Cards** (Light lift)
+
 ```
 Hover:
   - scale: 1.02
@@ -34,6 +36,7 @@ Hover:
 ```
 
 **Review Cards** (Medium lift)
+
 ```
 Hover:
   - translateY: -8px
@@ -43,6 +46,7 @@ Hover:
 ```
 
 **Metric Cards** (Subtle lift)
+
 ```
 Hover:
   - scale: 1.03
@@ -56,6 +60,7 @@ Hover:
 ## 📐 Responsive Spacing System
 
 ### Section Padding Pattern
+
 ```
 Mobile (base):     py-16  (64px)
 Small (640px+):    py-20  (80px)
@@ -64,6 +69,7 @@ Large (1024px+):   py-24  (maintained)
 ```
 
 ### Container Padding
+
 ```
 Mobile (base):     px-4   (16px)
 Small (640px+):    px-6   (24px)
@@ -71,6 +77,7 @@ Desktop:           px-6   (maintained)
 ```
 
 ### Gap Progression
+
 ```
 Mobile:    gap-4   (16px)
 Small:     gap-6   (24px)
@@ -82,6 +89,7 @@ Medium:    gap-8   (32px)
 ## 🔤 Typography Scale
 
 ### Heading Hierarchy
+
 ```
 Hero H1:
   text-4xl (36px)     [mobile]
@@ -100,6 +108,7 @@ Section H3:
 ```
 
 ### Body Text
+
 ```
 Base paragraph:
   text-base (16px)    [mobile]
@@ -116,6 +125,7 @@ Small text:
 ## 🎨 Color Usage Patterns
 
 ### Interactive Elements
+
 ```
 Primary Button:
   bg-primary
@@ -134,6 +144,7 @@ Link Hover:
 ```
 
 ### Background Layers
+
 ```
 Page Background:    bg-background
 Section Alt:        bg-secondary/30
@@ -146,6 +157,7 @@ Overlay:            bg-foreground (for footer)
 ## ✨ Animation Timing Reference
 
 ### Duration Scale
+
 ```
 Instant:    0ms     (state changes)
 Fast:       150ms   (button clicks)
@@ -155,6 +167,7 @@ Slower:     800ms   (hero animations)
 ```
 
 ### Easing Functions
+
 ```
 Linear:         linear
 EaseOut:        cubic-bezier(0, 0, 0.2, 1)
@@ -164,6 +177,7 @@ ExpoOut:        cubic-bezier(0.19, 1, 0.22, 1)
 ```
 
 ### Stagger Delays
+
 ```
 Service Cards:      stagger: 0.1s
 Review Cards:       stagger: 0.1s
@@ -176,6 +190,7 @@ Area Badges:        stagger: 0.08s
 ## 🎯 Touch Target Guidelines
 
 ### Minimum Sizes
+
 ```
 Buttons:            44px × 44px (iOS/Android standard)
 Links:              44px × 24px (height × width minimum)
@@ -184,6 +199,7 @@ Tab buttons:        40px height (min)
 ```
 
 ### Spacing Between Targets
+
 ```
 Vertical:   8px minimum (gap-2)
 Horizontal: 12px minimum (gap-3)
@@ -194,6 +210,7 @@ Horizontal: 12px minimum (gap-3)
 ## 📱 Mobile-Specific Adjustments
 
 ### Hero Section
+
 ```
 Badge text:
   "Sanitation Excellence Guaranteed"  [desktop]
@@ -209,6 +226,7 @@ Stats grid:
 ```
 
 ### ServiceAreas
+
 ```
 Content order:
   [Content, Map]  [mobile - easier to read first]
@@ -216,6 +234,7 @@ Content order:
 ```
 
 ### Footer
+
 ```
 Grid:
   1 column          [mobile]
@@ -232,6 +251,7 @@ Contact stack:
 ## 🔍 Focus State Specification
 
 ### Visual Treatment
+
 ```
 Ring width:         2px
 Ring color:         primary
@@ -241,6 +261,7 @@ Outline:            none (replaced by ring)
 ```
 
 ### Applies To
+
 ```
 - All <a> tags
 - All <button> elements
@@ -253,7 +274,9 @@ Outline:            none (replaced by ring)
 ## 🌙 Dark Mode Considerations
 
 ### Auto-Adapting Elements
+
 All colors use CSS custom properties that automatically adjust:
+
 ```
 bg-background    → light or dark based on theme
 bg-card          → adjusts contrast
@@ -261,6 +284,7 @@ text-foreground  → ensures readability
 ```
 
 ### Shadow Adjustments
+
 Shadows maintain visibility in both modes via OKLCH color space.
 
 ---
@@ -283,6 +307,7 @@ Timeline:
 ## 📊 Performance Budgets
 
 ### Animation Performance
+
 ```
 Target FPS:         60fps (16.67ms per frame)
 Max animations:     4 simultaneous
@@ -291,6 +316,7 @@ Will-change:        Used sparingly, cleared after animation
 ```
 
 ### CSS Complexity
+
 ```
 Max specificity:    2 levels deep
 BEM methodology:    Not used (Tailwind utility-first)
@@ -302,6 +328,7 @@ Custom classes:     Only for complex animations
 ## 🧪 Testing Viewport Sizes
 
 ### Priority Breakpoints
+
 ```
 Mobile:      375px  (iPhone SE)
 Mobile L:    428px  (iPhone 14 Pro Max)
@@ -311,6 +338,7 @@ Wide:        1920px (Full HD)
 ```
 
 ### Edge Cases
+
 ```
 Very small:  320px  (ensure no overflow)
 Between:     640px  (sm breakpoint edge)
@@ -322,22 +350,26 @@ Ultra-wide:  2560px (max-w-7xl container)
 ## 🎁 Polish Details
 
 ### Navbar
+
 - Blur backdrop when scrolled
 - Shadow appears on scroll
 - Logo background inverts (transparent → solid)
 - Mobile menu slides down smoothly
 
 ### Cards
+
 - Border color subtly shifts on hover
 - Icon backgrounds animate color change
 - Text maintains readability during transitions
 
 ### Badges/Pills
+
 - Pulse animation on status indicators
 - Rounded full for pill shape
 - Small, readable font sizes
 
 ### Links
+
 - Underline on hover (where appropriate)
 - Color transition (300ms)
 - Focus ring appears on keyboard nav only

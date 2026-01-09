@@ -3,6 +3,7 @@
 ## What Changed
 
 ### Before (Tight Coupling)
+
 ```tsx
 // App.tsx owned modal state directly
 const [leadModalOpen, setLeadModalOpen] = useState(false);
@@ -17,12 +18,14 @@ const [leadSource, setLeadSource] = useState<string | null>(null);
 ```
 
 **Problems:**
+
 - Adding new modal required editing App.tsx
 - Modal-specific state leaked into App component
 - Hard to test modals in isolation
 - Scalability issues with 10+ modals
 
 ### After (Proper Boundaries)
+
 ```tsx
 // App.tsx - Clean, no modal logic
 const App = () => (
@@ -37,11 +40,16 @@ const App = () => (
 // Child components - Access modal system via hook
 const Navbar = () => {
   const { openModal } = useModalManager();
-  return <button onClick={() => openModal('service-request', { source: 'navbar' })}>Request Service</button>;
+  return (
+    <button onClick={() => openModal('service-request', { source: 'navbar' })}>
+      Request Service
+    </button>
+  );
 };
 ```
 
 **Benefits:**
+
 - Add new modal: Register in ModalRegistry.tsx only
 - App.tsx never changes
 - Each modal owns its state
@@ -53,6 +61,7 @@ const Navbar = () => {
 ### 1. Update Child Components
 
 **Before:**
+
 ```tsx
 interface NavbarProps {
   openLeadModal: (source: string) => void;
@@ -64,19 +73,25 @@ const Navbar: React.FC<NavbarProps> = ({ openLeadModal }) => {
 ```
 
 **After:**
+
 ```tsx
 import { useModalManager } from '../hooks/useModalManager';
 
 const Navbar: React.FC = () => {
   const { openModal } = useModalManager();
-  
-  return <button onClick={() => openModal('service-request', { source: 'navbar' })}>Request Service</button>;
+
+  return (
+    <button onClick={() => openModal('service-request', { source: 'navbar' })}>
+      Request Service
+    </button>
+  );
 };
 ```
 
 ### 2. Update Modal Components (If Needed)
 
 **Before:**
+
 ```tsx
 interface ServiceRequestModalProps {
   open: boolean;
@@ -92,19 +107,21 @@ interface ServiceRequestModalProps {
 **Step 1:** Create modal component as usual
 
 **Step 2:** Register in `ModalRegistry.tsx`:
+
 ```tsx
 const MODAL_REGISTRY = {
   // ... existing modals ...
   'my-new-modal': {
     component: MyNewModal,
     propMapping: {
-      customProp: 'props.customProp'
-    }
-  }
+      customProp: 'props.customProp',
+    },
+  },
 };
 ```
 
 **Step 3:** Use anywhere:
+
 ```tsx
 const { openModal } = useModalManager();
 openModal('my-new-modal', { customProp: 'value' });
@@ -113,19 +130,20 @@ openModal('my-new-modal', { customProp: 'value' });
 ## Testing
 
 ### Test Modal in Isolation
+
 ```tsx
 import { renderHook } from '@testing-library/react';
 import { useModalManager } from './useModalManager';
 
 test('opens modal with props', () => {
   const { result } = renderHook(() => useModalManager(), {
-    wrapper: ModalManagerProvider
+    wrapper: ModalManagerProvider,
   });
-  
+
   act(() => {
     result.current.openModal('service-request', { source: 'test' });
   });
-  
+
   expect(result.current.isModalOpen('service-request')).toBe(true);
   expect(result.current.getModalProps('service-request')).toEqual({ source: 'test' });
 });
@@ -145,6 +163,7 @@ test('opens modal with props', () => {
 ## Rollback Plan
 
 If issues arise, revert App.tsx to original and remove:
+
 - hooks/useModalManager.ts
 - components/ModalRegistry.tsx
 

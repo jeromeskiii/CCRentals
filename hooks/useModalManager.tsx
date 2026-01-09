@@ -74,11 +74,19 @@ export const ModalManagerProvider: React.FC<ModalManagerProviderProps> = ({ chil
 };
 
 /**
+ * Optional hook to access modal manager.
+ * Returns `null` when used outside ModalManagerProvider.
+ */
+export const useOptionalModalManager = (): ModalManagerContextValue | null => {
+  return useContext(ModalManagerContext);
+};
+
+/**
  * Hook to access modal manager
  * Throws error if used outside ModalManagerProvider
  */
 export const useModalManager = (): ModalManagerContextValue => {
-  const context = useContext(ModalManagerContext);
+  const context = useOptionalModalManager();
   if (!context) {
     throw new Error('useModalManager must be used within ModalManagerProvider');
   }

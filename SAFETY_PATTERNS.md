@@ -3,6 +3,7 @@
 This document outlines systematic safety patterns established across the codebase to prevent common security and reliability issues.
 
 ## Table of Contents
+
 1. [Input Validation & Sanitization](#input-validation--sanitization)
 2. [API Error Handling](#api-error-handling)
 3. [Type-Safe Parsing](#type-safe-parsing)
@@ -14,15 +15,19 @@ This document outlines systematic safety patterns established across the codebas
 ## Input Validation & Sanitization
 
 ### Pattern
+
 **Always validate and sanitize user input before processing or storing.**
 
 ### Location
+
 `lib/validation.ts`
 
 ### Utilities Available
 
 #### `sanitizeInput(input: string): string`
+
 Removes potentially dangerous characters to prevent XSS attacks.
+
 ```typescript
 import { sanitizeInput } from '../lib/validation';
 
@@ -30,13 +35,16 @@ const userInput = sanitizeInput(rawInput);
 ```
 
 **What it does:**
+
 - Removes `<` and `>` characters to prevent XSS
 - Removes null bytes
 - Trims whitespace
 - Throws TypeError if input is not a string
 
 #### `sanitizeEmail(email: string): string`
+
 Normalizes email addresses.
+
 ```typescript
 import { sanitizeEmail } from '../lib/validation';
 
@@ -44,12 +52,15 @@ const email = sanitizeEmail(rawEmail);
 ```
 
 **What it does:**
+
 - Converts to lowercase
 - Trims whitespace
 - Throws TypeError if input is not a string
 
 #### `normalizePhoneNumber(phone: string): string`
+
 Normalizes phone numbers to E.164 format.
+
 ```typescript
 import { normalizePhoneNumber } from '../lib/validation';
 
@@ -57,12 +68,14 @@ const phone = normalizePhoneNumber(rawPhone);
 ```
 
 **What it does:**
+
 - Extracts digits only
 - Converts 10-digit US numbers to `+1XXXXXXXXXX`
 - Converts 11-digit numbers starting with 1 to `+1XXXXXXXXXX`
 - Throws TypeError if input is not a string
 
 ### Usage Example
+
 See `lib/api.ts:27-36` for the `sanitizeLeadData` function that demonstrates proper usage.
 
 ---
@@ -70,9 +83,11 @@ See `lib/api.ts:27-36` for the `sanitizeLeadData` function that demonstrates pro
 ## API Error Handling
 
 ### Pattern
+
 **Provide specific, actionable error messages based on error types.**
 
 ### Location
+
 `lib/api.ts`
 
 ### APIError Class
@@ -81,15 +96,15 @@ Custom error class for better error handling:
 
 ```typescript
 export class APIError extends Error {
-    constructor(
-        message: string,
-        public code?: string,
-        public statusCode?: number,
-        public details?: unknown
-    ) {
-        super(message);
-        this.name = 'APIError';
-    }
+  constructor(
+    message: string,
+    public code?: string,
+    public statusCode?: number,
+    public details?: unknown
+  ) {
+    super(message);
+    this.name = 'APIError';
+  }
 }
 ```
 
@@ -97,30 +112,31 @@ export class APIError extends Error {
 
 ```typescript
 try {
-    await api.leads.create(data);
+  await api.leads.create(data);
 } catch (err) {
-    if (err instanceof APIError) {
-        // Handle specific API errors with user-friendly messages
-        setError(err.message);
-    } else {
-        // Fallback for unexpected errors
-        setError('Something went wrong. Please contact support.');
-    }
+  if (err instanceof APIError) {
+    // Handle specific API errors with user-friendly messages
+    setError(err.message);
+  } else {
+    // Fallback for unexpected errors
+    setError('Something went wrong. Please contact support.');
+  }
 }
 ```
 
 ### Implemented Error Codes
 
-| Code | Status | Meaning |
-|------|--------|---------|
-| `VALIDATION_ERROR` | 400 | Input data failed validation |
-| `DUPLICATE_ENTRY` | 409 | Resource already exists |
-| `PERMISSION_DENIED` | 403 | User lacks necessary permissions |
-| `NETWORK_ERROR` | 0 | Network connectivity issue |
-| `SUBMISSION_ERROR` | 500 | Generic server error |
-| `FETCH_ERROR` | 500 | Failed to retrieve data |
+| Code                | Status | Meaning                          |
+| ------------------- | ------ | -------------------------------- |
+| `VALIDATION_ERROR`  | 400    | Input data failed validation     |
+| `DUPLICATE_ENTRY`   | 409    | Resource already exists          |
+| `PERMISSION_DENIED` | 403    | User lacks necessary permissions |
+| `NETWORK_ERROR`     | 0      | Network connectivity issue       |
+| `SUBMISSION_ERROR`  | 500    | Generic server error             |
+| `FETCH_ERROR`       | 500    | Failed to retrieve data          |
 
 ### Implementation Details
+
 See `lib/api.ts:47-107` for the complete error handling implementation.
 
 ---
@@ -128,12 +144,15 @@ See `lib/api.ts:47-107` for the complete error handling implementation.
 ## Type-Safe Parsing
 
 ### Pattern
+
 **Never use `parseInt()`, `parseFloat()`, or `Number()` directly. Use safe parsing utilities.**
 
 ### Location
+
 `lib/validation.ts:82-97`
 
 ### Why This Matters
+
 ```typescript
 // UNSAFE - Can produce NaN, which breaks calculations
 const count = parseInt(userInput);
@@ -147,6 +166,7 @@ const total = count * 5; // 0 * 5 = 0 (fallback) or valid number
 ### Utilities Available
 
 #### `safeParseInt(value: string | number, defaultValue: number = 0): number`
+
 Safely parses integers with fallback.
 
 ```typescript
@@ -160,6 +180,7 @@ onChange={(e) => setUnits(Math.max(1, safeParseInt(e.target.value, 1)))}
 ```
 
 #### `safeParseFloat(value: string | number, defaultValue: number = 0): number`
+
 Safely parses floating point numbers with fallback.
 
 ```typescript
@@ -169,6 +190,7 @@ const price = safeParseFloat(priceInput, 0);
 ```
 
 ### Usage Examples
+
 - `components/UnitCalculator.tsx:283` - Guest count slider
 - `components/UnitCalculator.tsx:316` - Duration slider
 - `components/EnhancedQuoteModal.tsx:274` - Units input
@@ -178,13 +200,17 @@ const price = safeParseFloat(priceInput, 0);
 ## Safe Storage Access
 
 ### Pattern
+
 **Wrap all localStorage/sessionStorage access in try-catch. Use the safe wrapper.**
 
 ### Location
+
 `lib/validation.ts:99-128`
 
 ### Why This Matters
+
 LocalStorage can fail for several reasons:
+
 - User has disabled storage
 - Storage quota exceeded
 - Private browsing mode
@@ -210,16 +236,16 @@ const success = safeLocalStorage.removeItem('key');
 ```typescript
 // BEFORE (unsafe)
 useEffect(() => {
-    if (currentStep === 5) {
-        localStorage.setItem('recommendations', JSON.stringify(recommendations));
-    }
+  if (currentStep === 5) {
+    localStorage.setItem('recommendations', JSON.stringify(recommendations));
+  }
 }, [currentStep, recommendations]);
 
 // AFTER (safe)
 useEffect(() => {
-    if (currentStep === 5) {
-        safeLocalStorage.setItem('recommendations', recommendations);
-    }
+  if (currentStep === 5) {
+    safeLocalStorage.setItem('recommendations', recommendations);
+  }
 }, [currentStep, recommendations]);
 ```
 
@@ -230,9 +256,11 @@ See `components/UnitCalculator.tsx:150` for implementation.
 ## Form Validation
 
 ### Pattern
+
 **Validate on blur for immediate feedback, validate on submit for safety.**
 
 ### Location
+
 `components/EnhancedQuoteModal.tsx:107-131`
 
 ### Implementation Pattern
@@ -275,14 +303,17 @@ const handleSubmit = async () => {
 ### Validation Rules
 
 #### Email (Optional)
+
 - Regex: `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`
 - Error: "Please enter a valid email address"
 
 #### Phone (Required)
+
 - Regex: `/^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/`
 - Error: "Please enter a valid phone number"
 
 #### Name (Required)
+
 - Min length: 2 characters
 - Max length: 100 characters
 - Sanitized before submission

@@ -15,11 +15,7 @@ interface UseModalA11yOptions {
   initialFocusRef?: RefObject<HTMLElement>;
 }
 
-export const useModalA11y = ({
-  isOpen,
-  onClose,
-  initialFocusRef,
-}: UseModalA11yOptions) => {
+export const useModalA11y = ({ isOpen, onClose, initialFocusRef }: UseModalA11yOptions) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
@@ -29,9 +25,7 @@ export const useModalA11y = ({
     previousFocusRef.current = document.activeElement as HTMLElement | null;
 
     const focusTarget =
-      initialFocusRef?.current ||
-      getFocusableElements(modalRef.current)[0] ||
-      modalRef.current;
+      initialFocusRef?.current || getFocusableElements(modalRef.current)[0] || modalRef.current;
 
     requestAnimationFrame(() => {
       focusTarget?.focus();
