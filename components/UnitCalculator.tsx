@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { safeParseInt, safeLocalStorage } from '../lib/validation';
+import { BUSINESS_RULES } from '../config/businessRules';
 
 // Types for the calculator
 type EventType = 'wedding' | 'construction' | 'festival' | 'corporate' | 'outdoor' | 'private';
@@ -28,7 +30,7 @@ const UnitCalculator: React.FC = () => {
     // Form state
     const [eventType, setEventType] = useState<EventType | ''>('');
     const [guestCount, setGuestCount] = useState(100);
-    const [duration, setDuration] = useState(4);
+    const [duration, setDuration] = useState(BUSINESS_RULES.unitCalculation.baseEventHours);
     const [durationUnit, setDurationUnit] = useState<'hours' | 'days'>('hours');
     const [alcoholServed, setAlcoholServed] = useState(false);
     const [adaRequired, setAdaRequired] = useState(false);
@@ -40,17 +42,17 @@ const UnitCalculator: React.FC = () => {
     const [fencingLength, setFencingLength] = useState(100);
     const [addAttendant, setAddAttendant] = useState(false);
 
-    // Calculate recommendations (removed useMemo - calculation is fast enough)
-    const recommendations: Recommendation[] = (() => {
+    // Calculate recommendations with memoization to avoid recalculation on every render
+    const recommendations: Recommendation[] = useMemo(() => {
         const recs: Recommendation[] = [];
 
         // Base calculation: Industry standard is 1 unit per 50 guests for 4 hours
-        let baseUnits = Math.ceil(guestCount / 50);
+        let baseUnits = Math.ceil(guestCount / BUSINESS_RULES.unitCalculation.guestsPerUnit);
 
         // Time multiplier
-        const timeHours = durationUnit === 'days' ? duration * 8 : duration;
-        if (timeHours > 4) {
-            baseUnits = Math.ceil(baseUnits * (timeHours / 4));
+        const timeHours = durationUnit === 'days' ? duration * BUSINESS_RULES.unitCalculation.hoursPerDay : duration;
+        if (timeHours > BUSINESS_RULES.unitCalculation.baseEventHours) {
+            baseUnits = Math.ceil(baseUnits * (timeHours / BUSINESS_RULES.unitCalculation.baseEventHours));
         }
 
         // Alcohol increases need by 20%
@@ -60,8 +62,8 @@ const UnitCalculator: React.FC = () => {
 
         // Construction sites need more units (1 per 10 workers)
         if (eventType === 'construction') {
-            baseUnits = Math.ceil(guestCount / 10);
-            if (timeHours > 8) {
+            baseUnits = Math.ceil(guestCount / BUSINESS_RULES.unitCalculation.workersPerUnit);
+            if (timeHours > BUSINESS_RULES.unitCalculation.hoursPerDay) {
                 baseUnits = Math.ceil(baseUnits * 1.5);
             }
         }
@@ -98,7 +100,7 @@ const UnitCalculator: React.FC = () => {
             });
         }
 
-        // ADA units  
+        // ADA units
         if (adaRequired) {
             const adaCount = Math.max(1, Math.ceil(baseUnits * 0.1)); // 10% ADA
             recs.push({
@@ -134,20 +136,24 @@ const UnitCalculator: React.FC = () => {
         if (addAttendant && (eventType === 'wedding' || eventType === 'corporate')) {
             recs.push({
                 type: 'Restroom Attendant',
-                quantity: Math.ceil(timeHours / 4),
+                quantity: Math.ceil(timeHours / BUSINESS_RULES.unitCalculation.attendantShiftHours),
                 description: '4-hour shifts for premium service',
                 icon: '👤'
             });
         }
 
         return recs;
-    })();
+    }, [guestCount, duration, durationUnit, alcoholServed, eventType, adaRequired, addHandwash, addFencing, fencingLength, addAttendant, premiumPreferred]);
 
-    // Save recommendations to localStorage for SiteMapPlanner
+    // Save recommendations to localStorage for SiteMapPlanner (debounced to reduce I/O)
     useEffect(() => {
-        if (currentStep === 5 && recommendations.length > 0) {
-            localStorage.setItem('calculatorRecommendations', JSON.stringify(recommendations));
-        }
+        if (currentStep !== 5 || recommendations.length === 0) return;
+
+        const timeoutId = setTimeout(() => {
+            safeLocalStorage.setItem('calculatorRecommendations', recommendations);
+        }, 500); // Debounce for 500ms to batch rapid changes
+
+        return () => clearTimeout(timeoutId);
     }, [currentStep, recommendations]);
 
     const nextStep = () => {
@@ -171,7 +177,7 @@ const UnitCalculator: React.FC = () => {
         setCurrentStep(1);
         setEventType('');
         setGuestCount(100);
-        setDuration(4);
+        setDuration(BUSINESS_RULES.unitCalculation.baseEventHours);
         setDurationUnit('hours');
         setAlcoholServed(false);
         setAdaRequired(false);
@@ -279,7 +285,7 @@ const UnitCalculator: React.FC = () => {
                                                     max="1000"
                                                     step="10"
                                                     value={guestCount}
-                                                    onChange={(e) => setGuestCount(parseInt(e.target.value))}
+                                                    onChange={(e) => setGuestCount(safeParseInt(e.target.value, 10))}
                                                     className="w-full h-3 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-sky-600"
                                                 />
                                                 <div className="flex justify-between text-xs text-zinc-400 mt-2">
@@ -312,7 +318,7 @@ const UnitCalculator: React.FC = () => {
                                                     min="1"
                                                     max={durationUnit === 'hours' ? 24 : 30}
                                                     value={duration}
-                                                    onChange={(e) => setDuration(parseInt(e.target.value))}
+                                                    onChange={(e) => setDuration(safeParseInt(e.target.value, 1))}
                                                     className="w-full h-3 bg-zinc-200 rounded-lg appearance-none cursor-pointer accent-sky-600"
                                                 />
                                             </div>
@@ -335,7 +341,17 @@ const UnitCalculator: React.FC = () => {
                                         <div className="space-y-4">
                                             {eventType !== 'construction' && (
                                                 <button
+                                                    type="button"
+                                                    role="checkbox"
+                                                    aria-checked={alcoholServed}
+                                                    aria-label="Alcohol will be served"
                                                     onClick={() => setAlcoholServed(!alcoholServed)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === ' ' || e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            setAlcoholServed(!alcoholServed);
+                                                        }
+                                                    }}
                                                     className={`w-full p-6 rounded-2xl border-2 transition-all flex items-center gap-4 text-left ${alcoholServed
                                                             ? 'border-sky-500 bg-sky-50'
                                                             : 'border-zinc-200 bg-white hover:border-zinc-300'
@@ -361,7 +377,17 @@ const UnitCalculator: React.FC = () => {
                                             )}
 
                                             <button
+                                                type="button"
+                                                role="checkbox"
+                                                aria-checked={adaRequired}
+                                                aria-label="ADA compliance required"
                                                 onClick={() => setAdaRequired(!adaRequired)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === ' ' || e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        setAdaRequired(!adaRequired);
+                                                    }
+                                                }}
                                                 className={`w-full p-6 rounded-2xl border-2 transition-all flex items-center gap-4 text-left ${adaRequired
                                                         ? 'border-sky-500 bg-sky-50'
                                                         : 'border-zinc-200 bg-white hover:border-zinc-300'
@@ -387,7 +413,17 @@ const UnitCalculator: React.FC = () => {
 
                                             {(eventType === 'wedding' || eventType === 'corporate') && (
                                                 <button
+                                                    type="button"
+                                                    role="checkbox"
+                                                    aria-checked={premiumPreferred}
+                                                    aria-label="Prefer premium or luxury units"
                                                     onClick={() => setPremiumPreferred(!premiumPreferred)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === ' ' || e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            setPremiumPreferred(!premiumPreferred);
+                                                        }
+                                                    }}
                                                     className={`w-full p-6 rounded-2xl border-2 transition-all flex items-center gap-4 text-left ${premiumPreferred
                                                             ? 'border-sky-500 bg-sky-50'
                                                             : 'border-zinc-200 bg-white hover:border-zinc-300'
@@ -429,7 +465,17 @@ const UnitCalculator: React.FC = () => {
 
                                         <div className="space-y-4">
                                             <button
+                                                type="button"
+                                                role="checkbox"
+                                                aria-checked={addHandwash}
+                                                aria-label="Add handwash stations"
                                                 onClick={() => setAddHandwash(!addHandwash)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === ' ' || e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        setAddHandwash(!addHandwash);
+                                                    }
+                                                }}
                                                 className={`w-full p-6 rounded-2xl border-2 transition-all flex items-center gap-4 text-left ${addHandwash
                                                         ? 'border-emerald-500 bg-emerald-50'
                                                         : 'border-zinc-200 bg-white hover:border-zinc-300'
@@ -458,7 +504,17 @@ const UnitCalculator: React.FC = () => {
                                                     : 'border-zinc-200 bg-white'
                                                 }`}>
                                                 <button
+                                                    type="button"
+                                                    role="checkbox"
+                                                    aria-checked={addFencing}
+                                                    aria-label="Add temporary fencing"
                                                     onClick={() => setAddFencing(!addFencing)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === ' ' || e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            setAddFencing(!addFencing);
+                                                        }
+                                                    }}
                                                     className="w-full p-6 flex items-center gap-4 text-left"
                                                 >
                                                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${addFencing ? 'bg-emerald-500' : 'bg-zinc-100'
@@ -492,7 +548,7 @@ const UnitCalculator: React.FC = () => {
                                                             max="500"
                                                             step="10"
                                                             value={fencingLength}
-                                                            onChange={(e) => setFencingLength(parseInt(e.target.value))}
+                                                            onChange={(e) => setFencingLength(safeParseInt(e.target.value, 50))}
                                                             className="w-full h-2 bg-emerald-200 rounded-lg appearance-none cursor-pointer accent-emerald-600"
                                                         />
                                                     </div>
@@ -501,7 +557,17 @@ const UnitCalculator: React.FC = () => {
 
                                             {(eventType === 'wedding' || eventType === 'corporate') && (
                                                 <button
+                                                    type="button"
+                                                    role="checkbox"
+                                                    aria-checked={addAttendant}
+                                                    aria-label="Add restroom attendant"
                                                     onClick={() => setAddAttendant(!addAttendant)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === ' ' || e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            setAddAttendant(!addAttendant);
+                                                        }
+                                                    }}
                                                     className={`w-full p-6 rounded-2xl border-2 transition-all flex items-center gap-4 text-left ${addAttendant
                                                             ? 'border-emerald-500 bg-emerald-50'
                                                             : 'border-zinc-200 bg-white hover:border-zinc-300'

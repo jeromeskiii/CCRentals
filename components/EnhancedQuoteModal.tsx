@@ -1,17 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { api } from '../lib/api';
+import { api, APIError } from '../lib/api';
 import { QuoteDetails } from './QuoteCalculator';
-
-// Add type for NodeJS.Timeout
-declare global {
-  interface NodeJS {
-    Timeout: {
-      ref(): NodeJS.Timeout;
-      new(callback: (...args: any[]) => void, ms: number, ...args: any[]): NodeJS.Timeout;
-    };
-  }
-}
+import { useModalA11y } from '../lib/useModalA11y';
+import { safeParseInt, sanitizeInput, sanitizeEmail } from '../lib/validation';
 
 interface EnhancedQuoteModalProps {
   open: boolean;
@@ -26,11 +18,14 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   onClose,
   prefilledQuote
 }) => {
+  const { modalRef } = useModalA11y({
+    isOpen: open,
+    onClose
+  });
+
   const [currentStep, setCurrentStep] = useState<Step>('service');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const successTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Form state
   const [serviceType, setServiceType] = useState(prefilledQuote?.serviceType || 'Standard Portable Toilet');
@@ -46,13 +41,12 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
 
   // Sync form state when modal opens or prefilledQuote changes
   useEffect(() => {
     if (!open) return;
-    
-    // Store previous focus
-    previousFocusRef.current = document.activeElement as HTMLElement;
     
     if (prefilledQuote) {
       setServiceType(prefilledQuote.serviceType);
@@ -63,57 +57,6 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
       resetForm();
     }
   }, [open, prefilledQuote]);
-
-  // Restore focus on close
-  useEffect(() => {
-    if (!open && previousFocusRef.current) {
-      previousFocusRef.current.focus();
-    }
-  }, [open]);
-
-  // Handle Escape key
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      handleClose();
-    }
-  }, []);
-
-  // Add/remove Escape key listener
-  useEffect(() => {
-    if (open) {
-      document.addEventListener('keydown', handleKeyDown);
-    }
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [open, handleKeyDown]);
-
-  // Trap focus within modal
-  const handleTabKey = useCallback((e: KeyboardEvent) => {
-    if (!open || e.key !== 'Tab') return;
-    
-    const focusableElements = modalRef.current?.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    
-    if (focusableElements && focusableElements.length > 0) {
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-      
-      if (e.shiftKey && document.activeElement === firstElement) {
-        e.preventDefault();
-        lastElement.focus();
-      } else if (!e.shiftKey && document.activeElement === lastElement) {
-        e.preventDefault();
-        firstElement.focus();
-      }
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (open) {
-      document.addEventListener('keydown', handleTabKey);
-    }
-    return () => document.removeEventListener('keydown', handleTabKey);
-  }, [open, handleTabKey]);
 
   // Clear timeout on unmount
   useEffect(() => {
@@ -161,6 +104,32 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
     setError('');
   };
 
+  // Validation helpers
+  const validateEmail = (email: string): boolean => {
+    if (!email) return true; // Optional field
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError('Please enter a valid email address');
+      return false;
+    }
+    setEmailError('');
+    return true;
+  };
+
+  const validatePhone = (phone: string): boolean => {
+    if (!phone) {
+      setPhoneError('Phone number is required');
+      return false;
+    }
+    const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
+    if (!phoneRegex.test(phone)) {
+      setPhoneError('Please enter a valid phone number');
+      return false;
+    }
+    setPhoneError('');
+    return true;
+  };
+
   const handleClose = () => {
     resetForm();
     onClose();
@@ -168,15 +137,37 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
 
   const handleSubmit = async () => {
     setError('');
+    setEmailError('');
+    setPhoneError('');
+
+    // Validate required fields
+    if (!name.trim()) {
+      setError('Please enter your name');
+      return;
+    }
+
+    if (!validatePhone(phone)) {
+      return;
+    }
+
+    if (email && !validateEmail(email)) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
+      // Sanitize inputs before submission
+      const sanitizedName = sanitizeInput(name);
+      const sanitizedEmail = email ? sanitizeEmail(email) : undefined;
+      const sanitizedNotes = `Event: ${eventType}, Attendees: ${attendees}, Units: ${units}, Duration: ${duration} days, Start: ${startDate}, Address: ${sanitizeInput(address)}, Company: ${sanitizeInput(company)}, Notes: ${sanitizeInput(notes)}`;
+
       await api.leads.create({
-        name,
-        email,
+        name: sanitizedName,
+        email: sanitizedEmail,
         phone,
         service_type: serviceType,
-        notes: `Event: ${eventType}, Attendees: ${attendees}, Units: ${units}, Duration: ${duration} days, Start: ${startDate}, Address: ${address}, Company: ${company}, Notes: ${notes}`,
+        notes: sanitizedNotes,
         source: 'enhanced_quote_modal',
         status: 'new',
         is_emergency: false
@@ -188,7 +179,13 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
       }, 3000);
     } catch (err) {
       console.error('Quote submission error:', err);
-      setError('Something went wrong. Please try again or call us directly.');
+
+      // Handle specific API errors
+      if (err instanceof APIError) {
+        setError(err.message);
+      } else {
+        setError('Something went wrong. Please try again or call us directly at (555) 123-4567.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -274,7 +271,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
             <input
               type="number"
               value={units}
-              onChange={(e) => setUnits(Math.max(1, Number(e.target.value)))}
+              onChange={(e) => setUnits(Math.max(1, safeParseInt(e.target.value, 1)))}
               className="flex-1 text-center px-3 py-2 bg-secondary/30 border border-border rounded-lg font-bold text-lg"
             />
             <button
@@ -293,7 +290,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
           <input
             type="number"
             value={duration}
-            onChange={(e) => setDuration(Math.max(1, Number(e.target.value)))}
+            onChange={(e) => setDuration(Math.max(1, safeParseInt(e.target.value, 1)))}
             className="w-full px-4 py-2 bg-secondary/30 border border-border rounded-lg focus:ring-2 focus:ring-primary outline-none"
           />
         </div>
@@ -336,7 +333,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
           <input
             type="number"
             value={attendees}
-            onChange={(e) => setAttendees(Number(e.target.value))}
+            onChange={(e) => setAttendees(Math.max(1, safeParseInt(e.target.value, 1)))}
             className="w-full px-4 py-3 bg-secondary/30 border border-border rounded-xl focus:ring-2 focus:ring-primary outline-none"
             placeholder="50"
           />
@@ -426,24 +423,35 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            onBlur={(e) => validatePhone(e.target.value)}
             required
-            className="w-full px-4 py-3 bg-secondary/30 border border-border rounded-xl focus:ring-2 focus:ring-primary outline-none"
+            className={`w-full px-4 py-3 bg-secondary/30 border rounded-xl focus:ring-2 focus:ring-primary outline-none ${
+              phoneError ? 'border-red-500' : 'border-border'
+            }`}
             placeholder="(555) 123-4567"
           />
+          {phoneError && (
+            <p className="text-red-500 text-sm mt-1">{phoneError}</p>
+          )}
         </div>
 
         <div>
           <label className="block text-sm font-bold text-foreground mb-2">
-            Email <span className="text-red-500">*</span>
+            Email
           </label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-3 bg-secondary/30 border border-border rounded-xl focus:ring-2 focus:ring-primary outline-none"
-            placeholder="john@company.com"
+            onBlur={(e) => validateEmail(e.target.value)}
+            className={`w-full px-4 py-3 bg-secondary/30 border rounded-xl focus:ring-2 focus:ring-primary outline-none ${
+              emailError ? 'border-red-500' : 'border-border'
+            }`}
+            placeholder="john@company.com (optional)"
           />
+          {emailError && (
+            <p className="text-red-500 text-sm mt-1">{emailError}</p>
+          )}
         </div>
       </div>
 

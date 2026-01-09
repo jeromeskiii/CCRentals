@@ -9,6 +9,7 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal }) => {
   const heroRef = useRef<HTMLElement>(null);
   const bgImageRef = useRef<HTMLImageElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<gsap.core.Tween | null>(null);
   const [imageError, setImageError] = useState(false);
 
   const headlineWords = [
@@ -36,7 +37,7 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal }) => {
     if (bgImageRef.current) {
       gsap.set(bgImageRef.current, { scale: 1.15, x: '5%', y: '-5%' });
 
-      gsap.to(bgImageRef.current, {
+      animationRef.current = gsap.to(bgImageRef.current, {
         scale: 1.05,
         x: '-3%',
         y: '3%',
@@ -104,28 +105,45 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal }) => {
       '-=0.3'
     );
 
-    // Parallax effect on mouse move
+    // Optimized parallax effect using GSAP quickTo for high-frequency updates
+    // quickTo creates reusable animation functions, avoiding tween creation overhead
+    const contentMoveX = gsap.quickTo(contentRef.current, 'x', {
+      duration: 0.8,
+      ease: 'power2.out'
+    });
+    const contentMoveY = gsap.quickTo(contentRef.current, 'y', {
+      duration: 0.8,
+      ease: 'power2.out'
+    });
+    const bgMoveX = bgImageRef.current ? gsap.quickTo(bgImageRef.current, 'x', {
+      duration: 1,
+      ease: 'power2.out'
+    }) : null;
+    const bgMoveY = bgImageRef.current ? gsap.quickTo(bgImageRef.current, 'y', {
+      duration: 1,
+      ease: 'power2.out'
+    }) : null;
+
+    // Throttle to ~30fps to reduce CPU/GPU usage on low-end devices
+    let lastMoveTime = 0;
     const handleMouseMove = (e: MouseEvent) => {
-      if (!contentRef.current || !heroRef.current) return;
+      const now = Date.now();
+      if (now - lastMoveTime < 33) return; // ~30fps throttle
+      lastMoveTime = now;
+
+      if (!heroRef.current) return;
 
       const rect = heroRef.current.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width - 0.5;
       const y = (e.clientY - rect.top) / rect.height - 0.5;
 
-      gsap.to(contentRef.current, {
-        x: x * 15,
-        y: y * 10,
-        duration: 0.8,
-        ease: 'power2.out',
-      });
+      // Use quickTo for instant, optimized updates
+      contentMoveX(x * 15);
+      contentMoveY(y * 10);
 
-      if (bgImageRef.current) {
-        gsap.to(bgImageRef.current, {
-          x: `${-3 + x * -8}%`,
-          y: `${3 + y * -8}%`,
-          duration: 1,
-          ease: 'power2.out',
-        });
+      if (bgMoveX && bgMoveY) {
+        bgMoveX(`${-3 + x * -8}%`);
+        bgMoveY(`${3 + y * -8}%`);
       }
     };
 
@@ -133,6 +151,7 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal }) => {
 
     return () => {
       heroRef.current?.removeEventListener('mousemove', handleMouseMove);
+      animationRef.current?.kill();
     };
   }, []);
 

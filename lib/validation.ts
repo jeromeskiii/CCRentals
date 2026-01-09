@@ -7,12 +7,14 @@ export const leadSubmissionSchema = z.object({
         .min(2, 'Name must be at least 2 characters')
         .max(100, 'Name must be less than 100 characters')
         .trim(),
-    email: z.string()
-        .email('Invalid email address')
-        .toLowerCase()
-        .trim()
-        .optional()
-        .or(z.literal('')),
+    email: z.preprocess(
+        (val) => val === '' ? undefined : val,
+        z.string()
+            .email('Invalid email address')
+            .toLowerCase()
+            .trim()
+            .optional()
+    ),
     phone: z.string()
         .min(10, 'Phone number must be at least 10 digits')
         .max(20, 'Phone number is too long')
@@ -45,56 +47,65 @@ export interface LeadData extends LeadSubmission {
     };
 }
 
-// Sanitization utilities
-export const sanitizeInput = (input: string): string => {
-    return input
-        .replace(/[<>]/g, '') // Remove < and >
-        .trim();
-};
-
-export const sanitizeEmail = (email: string): string => {
-    return email.toLowerCase().trim();
-};
-
-export const normalizePhoneNumber = (phone: string): string => {
-    const digits = phone.replace(/\D/g, '');
-    if (digits.length === 10) {
-        return `+1${digits}`;
+// Safe parsing utilities
+export const safeParseInt = (value: string | number, defaultValue: number = 0): number => {
+    if (typeof value === 'number') {
+        return isNaN(value) ? defaultValue : Math.floor(value);
     }
-    return phone;
+    const parsed = parseInt(value, 10);
+    return isNaN(parsed) ? defaultValue : parsed;
+};
+
+export const safeParseFloat = (value: string | number, defaultValue: number = 0): number => {
+    if (typeof value === 'number') {
+        return isNaN(value) ? defaultValue : value;
+    }
+    const parsed = parseFloat(value);
+    return isNaN(parsed) ? defaultValue : parsed;
+};
+
+// Safe localStorage wrapper
+export const safeLocalStorage = {
+    getItem: <T>(key: string, defaultValue: T): T => {
+        try {
+            const item = localStorage.getItem(key);
+            return item ? JSON.parse(item) : defaultValue;
+        } catch (error) {
+            console.warn(`Failed to read from localStorage (key: ${key}):`, error);
+            return defaultValue;
+        }
+    },
+    setItem: (key: string, value: unknown): boolean => {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+            return true;
+        } catch (error) {
+            console.warn(`Failed to write to localStorage (key: ${key}):`, error);
+            return false;
+        }
+    },
+    removeItem: (key: string): boolean => {
+        try {
+            localStorage.removeItem(key);
+            return true;
+        } catch (error) {
+            console.warn(`Failed to remove from localStorage (key: ${key}):`, error);
+            return false;
+        }
+    }
 };
 
 // Rate limiting utilities
-const submissionTimestamps: number[] = [];
-
-export const checkRateLimit = (
-    maxSubmissions: number = 3,
-    timeWindowMs: number = 60 * 60 * 1000 // 1 hour
-): boolean => {
-    const now = Date.now();
-    // Remove timestamps older than time window and update the array
-    const recentTimestamps = submissionTimestamps.filter(
-        timestamp => now - timestamp < timeWindowMs
-    );
-    // Update the array to only contain recent timestamps
-    submissionTimestamps.length = 0;
-    submissionTimestamps.push(...recentTimestamps);
-    
-    if (recentTimestamps.length >= maxSubmissions) {
-        return false; // Rate limit exceeded
-    }
-    
-    // Add current timestamp
-    submissionTimestamps.push(now);
-    return true;
-};
-
-export const getTimeUntilNextSubmission = (): number => {
-    if (submissionTimestamps.length < 3) return 0;
-    
-    const oldestTimestamp = submissionTimestamps[0];
-    const timeWindowMs = 60 * 60 * 1000; // 1 hour
-    const timeRemaining = oldestTimestamp + timeWindowMs - Date.now();
-    
-    return Math.max(0, timeRemaining);
-};
+// ⚠️ SECURITY: Client-side rate limiting is fundamentally insecure and has been removed.
+// Client-side checks can be bypassed by: disabling JS, incognito mode, clearing storage,
+// DevTools manipulation, or any HTTP client.
+//
+// CORRECT SOLUTION: Implement server-side rate limiting in Supabase Edge Functions
+// or your backend API with per-IP/per-user tracking.
+//
+// References:
+// - Supabase rate limiting: https://supabase.com/docs/guides/functions/rate-limiting
+// - OWASP Rate Limit Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Rate_Limiting_Cheat_Sheet.html
+//
+// If client-side UI feedback is needed for UX purposes, the server should return
+// rate-limit headers (Retry-After, X-RateLimit-Limit) that the client displays.

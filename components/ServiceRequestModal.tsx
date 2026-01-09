@@ -1,7 +1,7 @@
 import React, { useId, useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../lib/api';
-import { leadSubmissionSchema, sanitizeInput, checkRateLimit, getTimeUntilNextSubmission, LeadData } from '../lib/validation';
+import { leadSubmissionSchema } from '../lib/validation';
 import { useModalA11y } from '../lib/useModalA11y';
 
 interface ServiceRequestModalProps {
@@ -72,16 +72,9 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
             return;
         }
 
-        // Check rate limiting
-        if (!checkRateLimit()) {
-            const timeRemaining = Math.ceil(getTimeUntilNextSubmission() / 60000);
-            setError(`Too many submissions. Please wait ${timeRemaining} minutes before trying again.`);
-            return;
-        }
-
         // Validate form
         const result = leadSubmissionSchema.safeParse({
-            name: sanitizeInput(name),
+            name: name.trim(),
             email: email ? email.toLowerCase().trim() : undefined,
             phone: phone.replace(/\D/g, ''),
             service_type: serviceType,
@@ -105,13 +98,7 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
         setIsSubmitting(true);
 
         try {
-             // We need to cast here because LeadData expects legacy fields that we made optional but might technically strictly require them depending on exact typing. 
-             // But since we updated the type, it should be fine.
-             const leadData: LeadData = {
-                ...result.data,
-            };
-            
-            await api.leads.create(leadData);
+            await api.leads.create(result.data);
 
             setIsSuccess(true);
             successTimeoutRef.current = setTimeout(() => {
