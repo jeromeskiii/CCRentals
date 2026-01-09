@@ -1,3 +1,14 @@
+/**
+ * CCRentals Website Template
+ * 
+ * This is the complete website template using the new design system.
+ * Drop this into your project and integrate with your existing services.
+ * 
+ * Theme: Clean, trustworthy app-style design
+ * Colors: Teal/aqua primary, light backgrounds, subtle shadows
+ * Typography: DM Sans, Lora, IBM Plex Mono
+ */
+
 import React, { useState } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/template/Navbar';
@@ -10,7 +21,7 @@ import CTASection from './components/template/CTASection';
 import Footer from './components/template/Footer';
 import ServiceRequestModal from './components/ServiceRequestModal';
 
-const App: React.FC = () => {
+const AppTemplate: React.FC = () => {
   const [leadModalOpen, setLeadModalOpen] = useState(false);
   const [leadSource, setLeadSource] = useState<string | null>(null);
 
@@ -47,4 +58,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default AppTemplate;
