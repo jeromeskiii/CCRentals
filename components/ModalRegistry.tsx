@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ComponentType, FC } from 'react';
 import { useModalManager } from '../hooks/useModalManager';
 import ServiceRequestModal from './ServiceRequestModal';
 import EnhancedQuoteModal from './EnhancedQuoteModal';
@@ -15,33 +15,33 @@ import ConfirmationModal from './ConfirmationModal';
  */
 
 interface ModalConfig {
-  component: React.ComponentType<any>;
-  propMapping?: Record<string, string>; // Maps context props to component props
+  component: ComponentType<any>;
+  propMapping?: Record<string, string>; // componentProp -> modalState prop key
 }
 
 const MODAL_REGISTRY: Record<string, ModalConfig> = {
   'service-request': {
     component: ServiceRequestModal,
     propMapping: {
-      source: 'props.source' // Maps modal props.source to component source prop
+      source: 'source'
     }
   },
   'enhanced-quote': {
     component: EnhancedQuoteModal,
     propMapping: {
-      prefilledQuote: 'props.prefilledQuote'
+      prefilledQuote: 'prefilledQuote'
     }
   },
   'confirmation': {
     component: ConfirmationModal,
     propMapping: {
-      title: 'props.title',
-      message: 'props.message',
-      confirmText: 'props.confirmText',
-      cancelText: 'props.cancelText',
-      onConfirm: 'props.onConfirm',
-      onCancel: 'props.onCancel',
-      variant: 'props.variant'
+      title: 'title',
+      message: 'message',
+      confirmText: 'confirmText',
+      cancelText: 'cancelText',
+      onConfirm: 'onConfirm',
+      onCancel: 'onCancel',
+      variant: 'variant'
     }
   }
 };
@@ -51,7 +51,7 @@ const MODAL_REGISTRY: Record<string, ModalConfig> = {
  * Renders all modals based on their state in ModalManager
  * Place this once at the root level, after all other content
  */
-export const ModalRegistry: React.FC = () => {
+export const ModalRegistry: FC = () => {
   const { modals, closeModal } = useModalManager();
 
   return (
@@ -71,8 +71,8 @@ export const ModalRegistry: React.FC = () => {
 
         // Map modal state props to component props
         if (config.propMapping) {
-          Object.entries(config.propMapping).forEach(([componentProp, modalPropPath]) => {
-            const value = modalState.props[componentProp];
+          Object.entries(config.propMapping).forEach(([componentProp, modalStateProp]) => {
+            const value = modalState.props[modalStateProp];
             if (value !== undefined) {
               componentProps[componentProp] = value;
             }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useOptionalModalManager } from '../../hooks/useModalManager';
 
@@ -121,9 +121,9 @@ const Reviews: React.FC<ReviewsProps> = ({ openLeadModal: openLeadModalProp }) =
           animate={isInView ? "show" : "hidden"}
           className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8"
         >
-          {reviews.map((review, idx) => (
-            <motion.div
-              key={review.id}
+	          {reviews.map((review) => (
+	            <motion.div
+	              key={review.id}
               variants={cardVariants}
               whileHover={{ y: -8, transition: { duration: 0.3, ease: 'easeOut' as const } }}
               className={`relative bg-card border rounded-2xl p-6 sm:p-8 hover:shadow-2xl transition-all duration-300 ${

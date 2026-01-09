@@ -119,11 +119,11 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal: openLeadModalProp }) => {
       duration: 0.8,
       ease: 'power2.out'
     });
-    const bgMoveX = bgImageRef.current ? gsap.quickTo(bgImageRef.current, 'x', {
+    const bgMoveX = bgImageRef.current ? gsap.quickTo(bgImageRef.current, 'xPercent', {
       duration: 1,
       ease: 'power2.out'
     }) : null;
-    const bgMoveY = bgImageRef.current ? gsap.quickTo(bgImageRef.current, 'y', {
+    const bgMoveY = bgImageRef.current ? gsap.quickTo(bgImageRef.current, 'yPercent', {
       duration: 1,
       ease: 'power2.out'
     }) : null;
@@ -146,8 +146,8 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal: openLeadModalProp }) => {
       contentMoveY(y * 10);
 
       if (bgMoveX && bgMoveY) {
-        bgMoveX(`${-3 + x * -8}%`);
-        bgMoveY(`${3 + y * -8}%`);
+        bgMoveX(-3 + x * -8);
+        bgMoveY(3 + y * -8);
       }
     };
 

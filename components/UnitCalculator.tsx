@@ -30,7 +30,7 @@ const UnitCalculator: React.FC = () => {
     // Form state
     const [eventType, setEventType] = useState<EventType | ''>('');
     const [guestCount, setGuestCount] = useState(100);
-    const [duration, setDuration] = useState(BUSINESS_RULES.unitCalculation.baseEventHours);
+    const [duration, setDuration] = useState<number>(BUSINESS_RULES.unitCalculation.baseEventHours);
     const [durationUnit, setDurationUnit] = useState<'hours' | 'days'>('hours');
     const [alcoholServed, setAlcoholServed] = useState(false);
     const [adaRequired, setAdaRequired] = useState(false);

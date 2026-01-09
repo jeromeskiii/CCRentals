@@ -9,7 +9,6 @@ const focusableSelector =
 
 describe('modal accessibility', () => {
   it('closes on Escape for ServiceRequestModal', async () => {
-    const user = userEvent.setup();
     const onClose = vi.fn();
 
     render(<ServiceRequestModal open onClose={onClose} source="test" />);

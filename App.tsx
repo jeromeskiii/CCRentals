@@ -1,14 +1,9 @@
-import React, { useState } from 'react';
+import React, { lazy, Suspense } from 'react';
 import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/template/Navbar';
-import Hero from './components/template/Hero';
-import ServicesInventory from './components/template/ServicesInventory';
-import TrustSignals from './components/template/TrustSignals';
-import Reviews from './components/template/Reviews';
-import ServiceAreas from './components/template/ServiceAreas';
-import CTASection from './components/template/CTASection';
 import Footer from './components/template/Footer';
-import ServiceRequestModal from './components/ServiceRequestModal';
+import { ModalManagerProvider, useModalManager } from './hooks/useModalManager';
+import ModalRegistry from './components/ModalRegistry';
 import {
   NavbarFallback,
   HeroFallback,
@@ -20,19 +15,17 @@ import {
   ModalFallback,
 } from './components/SectionFallbacks';
 
-const App: React.FC = () => {
-  const [leadModalOpen, setLeadModalOpen] = useState(false);
-  const [leadSource, setLeadSource] = useState<string | null>(null);
+const Hero = lazy(() => import('./components/template/Hero'));
+const ServicesInventory = lazy(() => import('./components/template/ServicesInventory'));
+const TrustSignals = lazy(() => import('./components/template/TrustSignals'));
+const Reviews = lazy(() => import('./components/template/Reviews'));
+const ServiceAreas = lazy(() => import('./components/template/ServiceAreas'));
+const CTASection = lazy(() => import('./components/template/CTASection'));
 
-  const openLeadModal = (source: string) => {
-    setLeadSource(source);
-    setLeadModalOpen(true);
-  };
-
-  const closeLeadModal = () => {
-    setLeadModalOpen(false);
-    setLeadSource(null);
-  };
+const AppContent: React.FC = () => {
+  // Bridge existing prop API to the modal manager
+  const { openModal } = useModalManager();
+  const openLeadModal = (source: string) => openModal('service-request', { source });
 
   return (
     <div className="flex flex-col min-h-screen selection:bg-primary/20 selection:text-primary">
@@ -42,38 +35,56 @@ const App: React.FC = () => {
 
       <main className="flex-grow">
         <ErrorBoundary fallback={<HeroFallback />}>
-          <Hero openLeadModal={openLeadModal} />
+          <Suspense fallback={<HeroFallback />}>
+            <Hero openLeadModal={openLeadModal} />
+          </Suspense>
         </ErrorBoundary>
 
         <ErrorBoundary fallback={<ServicesInventoryFallback />}>
-          <ServicesInventory />
+          <Suspense fallback={<ServicesInventoryFallback />}>
+            <ServicesInventory />
+          </Suspense>
         </ErrorBoundary>
 
         <ErrorBoundary fallback={<TrustSignalsFallback />}>
-          <TrustSignals />
+          <Suspense fallback={<TrustSignalsFallback />}>
+            <TrustSignals />
+          </Suspense>
         </ErrorBoundary>
 
         <ErrorBoundary fallback={<ReviewsFallback />}>
-          <Reviews openLeadModal={openLeadModal} />
+          <Suspense fallback={<ReviewsFallback />}>
+            <Reviews openLeadModal={openLeadModal} />
+          </Suspense>
         </ErrorBoundary>
 
         <ErrorBoundary fallback={<ServiceAreasFallback />}>
-          <ServiceAreas />
+          <Suspense fallback={<ServiceAreasFallback />}>
+            <ServiceAreas />
+          </Suspense>
         </ErrorBoundary>
 
         <ErrorBoundary fallback={<CTAFallback />}>
-          <CTASection openLeadModal={openLeadModal} />
+          <Suspense fallback={<CTAFallback />}>
+            <CTASection openLeadModal={openLeadModal} />
+          </Suspense>
         </ErrorBoundary>
       </main>
 
       <ErrorBoundary>
         <Footer />
       </ErrorBoundary>
-
-      <ErrorBoundary fallback={<ModalFallback onClose={closeLeadModal} />}>
-        <ServiceRequestModal open={leadModalOpen} onClose={closeLeadModal} source={leadSource} />
-      </ErrorBoundary>
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <ModalManagerProvider>
+      <AppContent />
+      {/* Centralized modal outlet */}
+      <ModalRegistry />
+    </ModalManagerProvider>
   );
 };
 
