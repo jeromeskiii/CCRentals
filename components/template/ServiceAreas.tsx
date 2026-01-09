@@ -53,89 +53,41 @@ const ServiceAreas: React.FC = () => {
             {/* Map placeholder - California state outline */}
             <div className="relative bg-secondary/20 rounded-3xl p-6 sm:p-8 border border-border">
               <div className="aspect-[4/3] bg-background rounded-2xl border border-border overflow-hidden relative">
-                {/* California state map SVG */}
+                {/* California/SoCal Map SVG - Clean Theme Implementation */}
                 <svg
                   viewBox="0 0 400 250"
-                  className="w-full h-full"
+                  className="w-full h-full drop-shadow-xl"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                   role="img"
-                  aria-label="California state map showing service coverage areas"
+                  aria-label="Southern California Service Area"
                 >
-                  <defs>
-                    {/* Gradient fill for the state shape */}
-                    <linearGradient id="california-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="oklch(var(--muted) / 0.6)" />
-                      <stop offset="50%" stopColor="oklch(var(--muted) / 0.4)" />
-                      <stop offset="100%" stopColor="oklch(var(--muted) / 0.6)" />
-                    </linearGradient>
-                    {/* Drop shadow filter */}
-                    <filter id="state-shadow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="oklch(var(--primary) / 0.15)" />
-                    </filter>
-                  </defs>
-
-                  {/* California state outline - simplified but recognizable */}
+                  {/* Clean Style: Background Fill + Primary Stroke (No Gradients) */}
                   <path
-                    d="M60 60
-                       L75 45 L85 48 L95 42 L110 48 L120 45 L130 55
-                       L140 50 L150 55 L160 52 L175 58 L185 55 L195 60
-                       L200 65 L205 75 L200 85 L210 90 L215 85
-                       L225 88 L235 85 L245 90 L250 88 L255 95
-                       L260 100 L265 110 L275 115 L280 125 L290 130
-                       L300 140 L310 150 L320 160 L325 175 L330 185
-                       L325 195 L315 205 L305 210 L295 215 L285 220
-                       L275 225 L265 228 L255 230 L245 228 L235 232
-                       L225 235 L215 238 L205 240 L195 238 L185 235
-                       L175 232 L165 228 L155 225 L145 222 L135 218
-                       L125 215 L115 212 L105 210 L95 208 L85 210
-                       L75 215 L65 220 L55 225 L50 230 L45 225
-                       L40 218 L35 210 L30 200 L25 190 L20 180
-                       L18 170 L15 160 L18 150 L15 140 L20 130
-                       L25 120 L30 110 L35 100 L40 90 L45 80
-                       L50 70 Z"
-                    fill="url(#california-gradient)"
-                    stroke="oklch(var(--primary) / 0.3)"
-                    strokeWidth="1.5"
-                    filter="url(#state-shadow)"
+                    d="M40,60 L120,60 L240,110 L300,160 L290,190 L260,200 L230,190 L200,185 L160,180 L130,160 L100,140 L70,100 L40,80 Z" 
+                    fill="oklch(var(--background))"
+                    stroke="oklch(var(--primary))"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
 
-                  {/* Service coverage region indicator (Southern California focus) */}
-                  <path
-                    d="M140 130 Q200 110 280 125 Q320 135 310 165 Q290 185 240 180 Q200 175 160 165 Q130 155 140 130Z"
-                    fill="oklch(var(--primary) / 0.08)"
-                    stroke="oklch(var(--primary) / 0.4)"
-                    strokeWidth="1"
-                    strokeDasharray="4 2"
-                  />
+                  {/* City Markers - Using Theme Colors */}
+                  {/* Los Angeles (Center) */}
+                  <circle cx="160" cy="140" r="6" fill="oklch(var(--primary))" className="animate-pulse" />
+                  
+                  {/* San Diego (Bottom Right) */}
+                  <circle cx="250" cy="180" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
+                  
+                  {/* Santa Barbara (Top Left) */}
+                  <circle cx="80" cy="90" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
+                  
+                  {/* Inland Empire */}
+                  <circle cx="210" cy="140" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
 
-                  {/* County markers - positioned to approximate geographic locations */}
-                  {/* Los Angeles County area */}
-                  <circle cx="210" cy="145" r="6" fill="oklch(var(--primary))" className="animate-pulse" />
-                  {/* Orange County area */}
-                  <circle cx="235" cy="138" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
-                  {/* Ventura County area */}
-                  <circle cx="185" cy="130" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
-                  {/* San Bernardino County area */}
-                  <circle cx="195" cy="165" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
-                  {/* Riverside County area */}
-                  <circle cx="220" cy="165" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
-                  {/* San Diego County area */}
-                  <circle cx="260" cy="145" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
-                  {/* Santa Barbara County area */}
-                  <circle cx="155" cy="118" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
-
-                  {/* City markers - smaller, secondary emphasis */}
-                  {/* Long Beach */}
-                  <circle cx="222" cy="140" r="4" fill="oklch(var(--chart-2))" />
-                  {/* Malibu */}
-                  <circle cx="185" cy="125" r="3.5" fill="oklch(var(--chart-2))" />
-                  {/* Anaheim */}
-                  <circle cx="230" cy="138" r="3.5" fill="oklch(var(--chart-2))" />
-                  {/* Huntington Beach */}
-                  <circle cx="238" cy="133" r="3.5" fill="oklch(var(--chart-2))" />
-                  {/* Inland Empire (San Bernardino/Riverside area) */}
-                  <circle cx="205" cy="162" r="3.5" fill="oklch(var(--chart-2))" />
+                  {/* Secondary Cities - Using Muted/Secondary Token */}
+                  <circle cx="170" cy="150" r="3" fill="oklch(var(--muted-foreground))" />
+                  <circle cx="150" cy="130" r="3" fill="oklch(var(--muted-foreground))" />
                 </svg>
 
                 {/* Coverage badge */}
