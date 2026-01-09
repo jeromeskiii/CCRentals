@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useId, useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../lib/api';
 import { leadSubmissionSchema, sanitizeInput, checkRateLimit, getTimeUntilNextSubmission, LeadData } from '../lib/validation';
+import { useModalA11y } from '../lib/useModalA11y';
 
 interface ServiceRequestModalProps {
     open: boolean;
@@ -10,6 +11,15 @@ interface ServiceRequestModalProps {
 }
 
 const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose, source }) => {
+    const idPrefix = useId();
+    const titleId = `${idPrefix}-service-request-title`;
+    const nameId = `${idPrefix}-name`;
+    const phoneId = `${idPrefix}-phone`;
+    const emailId = `${idPrefix}-email`;
+    const serviceTypeId = `${idPrefix}-service-type`;
+    const timeWindowId = `${idPrefix}-time-window`;
+    const emergencyId = `${idPrefix}-emergency`;
+    const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -22,6 +32,17 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
     const [error, setError] = useState('');
     const [fieldErrors, setFieldErrors] = useState<{ name?: string; email?: string; phone?: string }>({});
     const [honeypot, setHoneypot] = useState('');
+
+    const { modalRef } = useModalA11y({ isOpen: open, onClose });
+
+    // Clear timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (successTimeoutRef.current) {
+                clearTimeout(successTimeoutRef.current);
+            }
+        };
+    }, []);
 
     const serviceOptions = [
         "Standard Portable Restroom",
@@ -93,7 +114,7 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
             await api.leads.create(leadData);
 
             setIsSuccess(true);
-            setTimeout(() => {
+            successTimeoutRef.current = setTimeout(() => {
                 onClose();
                 setIsSuccess(false);
                 setName('');
@@ -125,20 +146,29 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
                     />
 
                     <motion.div
+                        ref={modalRef}
                         initial={{ scale: 0.95, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 20 }}
                         className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby={titleId}
+                        tabIndex={-1}
                     >
                         <div className="p-8">
                             <div className="flex justify-between items-start mb-6">
                                 <div>
-                                    <h3 className="text-2xl font-black text-zinc-900">Request Service</h3>
+                                    <h3 id={titleId} className="text-2xl font-black text-zinc-900">Request Service</h3>
                                     <p className="text-zinc-500 text-sm mt-1">
                                         We'll get back to you within 60 seconds.
                                     </p>
                                 </div>
-                                <button onClick={onClose} className="p-2 hover:bg-zinc-100 rounded-full transition-colors">
+                                <button
+                                    onClick={onClose}
+                                    className="p-2 hover:bg-zinc-100 rounded-full transition-colors"
+                                    aria-label="Close dialog"
+                                >
                                     <svg className="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
@@ -158,8 +188,9 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
                             ) : (
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div>
-                                        <label className="block text-xs font-bold uppercase text-zinc-500 mb-1">Name <span className="text-red-500">*</span></label>
+                                        <label htmlFor={nameId} className="block text-xs font-bold uppercase text-zinc-500 mb-1">Name <span className="text-red-500">*</span></label>
                                         <input
+                                            id={nameId}
                                             required
                                             type="text"
                                             value={name}
@@ -176,8 +207,9 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-bold uppercase text-zinc-500 mb-1">Phone <span className="text-red-500">*</span></label>
+                                        <label htmlFor={phoneId} className="block text-xs font-bold uppercase text-zinc-500 mb-1">Phone <span className="text-red-500">*</span></label>
                                         <input
+                                            id={phoneId}
                                             required
                                             type="tel"
                                             value={phone}
@@ -194,8 +226,9 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-bold uppercase text-zinc-500 mb-1">Email</label>
+                                        <label htmlFor={emailId} className="block text-xs font-bold uppercase text-zinc-500 mb-1">Email</label>
                                         <input
+                                            id={emailId}
                                             type="email"
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
@@ -212,8 +245,9 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
 
                                     <div className="grid grid-cols-1 gap-4">
                                         <div>
-                                            <label className="block text-xs font-bold uppercase text-zinc-500 mb-1">Service Type</label>
+                                            <label htmlFor={serviceTypeId} className="block text-xs font-bold uppercase text-zinc-500 mb-1">Service Type</label>
                                             <select
+                                                id={serviceTypeId}
                                                 value={serviceType}
                                                 onChange={(e) => setServiceType(e.target.value)}
                                                 className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl focus:ring-2 focus:border-transparent focus:ring-sky-500 outline-none transition-all appearance-none"
@@ -225,8 +259,9 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
                                         </div>
 
                                         <div>
-                                             <label className="block text-xs font-bold uppercase text-zinc-500 mb-1">Preferred Time</label>
+                                             <label htmlFor={timeWindowId} className="block text-xs font-bold uppercase text-zinc-500 mb-1">Preferred Time</label>
                                              <select
+                                                id={timeWindowId}
                                                 value={timeWindow}
                                                 onChange={(e) => setTimeWindow(e.target.value)}
                                                 className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl focus:ring-2 focus:border-transparent focus:ring-sky-500 outline-none transition-all appearance-none"
@@ -241,12 +276,12 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
                                     <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-center gap-3">
                                         <input 
                                             type="checkbox"
-                                            id="emergency-check"
+                                            id={emergencyId}
                                             checked={isEmergency}
                                             onChange={(e) => setIsEmergency(e.target.checked)}
                                             className="w-5 h-5 text-red-600 rounded focus:ring-red-500 border-gray-300"
                                         />
-                                        <label htmlFor="emergency-check" className="text-sm font-bold text-red-800">
+                                        <label htmlFor={emergencyId} className="text-sm font-bold text-red-800">
                                             This is an emergency request
                                         </label>
                                     </div>

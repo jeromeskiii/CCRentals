@@ -3,6 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../lib/api';
 import { QuoteDetails } from './QuoteCalculator';
 
+// Add type for NodeJS.Timeout
+declare global {
+  interface NodeJS {
+    Timeout: {
+      ref(): NodeJS.Timeout;
+      new(callback: (...args: any[]) => void, ms: number, ...args: any[]): NodeJS.Timeout;
+    };
+  }
+}
+
 interface EnhancedQuoteModalProps {
   open: boolean;
   onClose: () => void;
@@ -20,6 +30,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Form state
   const [serviceType, setServiceType] = useState(prefilledQuote?.serviceType || 'Standard Portable Toilet');
@@ -104,6 +115,15 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
     return () => document.removeEventListener('keydown', handleTabKey);
   }, [open, handleTabKey]);
 
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const serviceTypes = [
     { value: 'Standard Portable Toilet', label: 'Standard Toilet', icon: '🚽' },
     { value: 'Deluxe Unit with Sink', label: 'Deluxe w/ Sink', icon: '🚿' },
@@ -163,7 +183,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
       });
 
       setCurrentStep('success');
-      setTimeout(() => {
+      successTimeoutRef.current = setTimeout(() => {
         handleClose();
       }, 3000);
     } catch (err) {

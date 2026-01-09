@@ -6,23 +6,18 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 const steps = [
   {
     num: "01",
-    title: "Sync Calendar",
-    description: "Connect your booking calendar. We automatically schedule cleans based on your check-out dates."
+    title: "Request Service",
+    description: "Tell us your dates and needs. We'll confirm availability within minutes."
   },
   {
     num: "02",
-    title: "Standardized Clean",
-    description: "Our certified professionals follow a 75-point checklist specific to your property’s unique needs."
+    title: "Professional Clean",
+    description: "Our certified team follows a rigorous checklist for spotless results."
   },
   {
     num: "03",
-    title: "Photo Inspection",
-    description: "Receive high-res photos of the finished clean and inventory status directly to your phone."
-  },
-  {
-    num: "04",
     title: "Relax & Earn",
-    description: "Welcome your guests to a pristine home. High turnover scores lead to higher ranking and more revenue."
+    description: "Welcome your guests to a pristine home. High turnover scores lead to better reviews and more revenue."
   }
 ];
 
@@ -66,7 +61,7 @@ const Process: React.FC = () => {
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           <div>
             <h2 className="text-sm font-bold tracking-widest text-sky-600 uppercase mb-4">The Workflow</h2>
-            <h3 className="text-4xl md:text-5xl font-bold text-zinc-900 mb-8 leading-tight">Automation meets manual perfection.</h3>
+            <h3 className="text-4xl md:text-5xl font-bold text-zinc-900 mb-8 leading-tight">How it works</h3>
 
             <div className="space-y-10">
               {steps.map((step, idx) => (

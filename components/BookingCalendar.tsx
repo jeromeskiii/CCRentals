@@ -178,6 +178,11 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
           const isPast = isDateInPast(date);
           const isDisabled = isBlocked || isPast;
 
+          const isSelected = isStart || isEnd;
+          const availabilityLabel = isDisabled
+            ? (isBlocked ? 'unavailable' : 'past date')
+            : 'available';
+          
           return (
             <motion.button
               key={date.toISOString()}
@@ -187,6 +192,8 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
               disabled={isDisabled}
               whileHover={!isDisabled ? { scale: 1.1 } : {}}
               whileTap={!isDisabled ? { scale: 0.95 } : {}}
+              aria-label={`${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}, ${availabilityLabel}`}
+              aria-selected={isSelected}
               className={`
                 aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all
                 ${isStart || isEnd

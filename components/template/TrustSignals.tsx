@@ -31,7 +31,7 @@ const TrustSignals: React.FC = () => {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
 
   return (
@@ -65,8 +65,7 @@ const TrustSignals: React.FC = () => {
             <motion.div
               key={idx}
               variants={itemVariants}
-              whileHover={{ scale: 1.05, y: -2 }}
-              className="flex items-center gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-card border border-border rounded-full shadow-sm hover:shadow-md transition-shadow"
+              className="flex items-center gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-card border border-border rounded-full shadow-sm"
             >
               <span className="w-6 h-6 bg-primary/10 text-primary rounded-full flex items-center justify-center text-xs font-bold">
                 {cert.icon}
@@ -88,10 +87,9 @@ const TrustSignals: React.FC = () => {
           className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto"
         >
           {/* Speed Metrics */}
-          <motion.div 
-            variants={itemVariants} 
-            whileHover={{ scale: 1.03, y: -4 }}
-            className="bg-card border border-border rounded-2xl p-6 sm:p-8 hover:shadow-xl transition-all duration-300"
+          <motion.div
+            variants={itemVariants}
+            className="bg-card border border-border rounded-2xl p-6 sm:p-8"
           >
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -112,10 +110,9 @@ const TrustSignals: React.FC = () => {
           </motion.div>
 
           {/* Quality Metrics */}
-          <motion.div 
-            variants={itemVariants} 
-            whileHover={{ scale: 1.03, y: -4 }}
-            className="bg-card border border-border rounded-2xl p-6 sm:p-8 hover:shadow-xl transition-all duration-300"
+          <motion.div
+            variants={itemVariants}
+            className="bg-card border border-border rounded-2xl p-6 sm:p-8"
           >
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -139,10 +136,9 @@ const TrustSignals: React.FC = () => {
           </motion.div>
 
           {/* Volume Metrics */}
-          <motion.div 
-            variants={itemVariants} 
-            whileHover={{ scale: 1.03, y: -4 }}
-            className="bg-card border border-border rounded-2xl p-6 sm:p-8 hover:shadow-xl transition-all duration-300"
+          <motion.div
+            variants={itemVariants}
+            className="bg-card border border-border rounded-2xl p-6 sm:p-8"
           >
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
               <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -165,8 +161,7 @@ const TrustSignals: React.FC = () => {
           {/* Trust Badge Card */}
           <motion.div
             variants={itemVariants}
-            whileHover={{ scale: 1.03, y: -4 }}
-            className="bg-primary text-primary-foreground rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300"
+            className="bg-primary text-primary-foreground rounded-2xl p-6 sm:p-8 flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center gap-2 mb-3 sm:mb-4">

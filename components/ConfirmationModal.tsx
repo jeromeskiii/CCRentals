@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useModalA11y } from '../lib/useModalA11y';
 
 interface ConfirmationModalProps {
     isOpen: boolean;
@@ -22,6 +23,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     onCancel,
     variant = 'danger'
 }) => {
+    const titleId = useId();
+    const { modalRef } = useModalA11y({ isOpen, onClose: onCancel });
     const variantStyles = {
         danger: {
             confirm: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
@@ -55,13 +58,15 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                     />
 
                     <motion.div
+                        ref={modalRef}
                         initial={{ scale: 0.95, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 20 }}
                         className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden"
                         role="dialog"
                         aria-modal="true"
-                        aria-labelledby="modal-title"
+                        aria-labelledby={titleId}
+                        tabIndex={-1}
                     >
                         <div className="p-8">
                             {/* Icon */}
@@ -71,7 +76,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
                             {/* Content */}
                             <h3
-                                id="modal-title"
+                                id={titleId}
                                 className="text-2xl font-black text-foreground mb-3"
                             >
                                 {title}

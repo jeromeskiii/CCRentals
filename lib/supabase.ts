@@ -1,8 +1,18 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Environment variables are validated in vite.config.ts
-// They are defined at build time and will fail to build if missing
+// Validate environment variables in production
+const isProduction = import.meta.env.PROD;
+
+if (isProduction) {
+  if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+    throw new Error(
+      'Missing required Supabase environment variables in production. ' +
+      'Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.'
+    );
+  }
+}
+
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder';
 

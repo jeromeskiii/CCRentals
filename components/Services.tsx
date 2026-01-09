@@ -36,7 +36,7 @@ const container = {
 
 const card = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
 };
 
 const Services: React.FC = () => {
@@ -62,11 +62,9 @@ const Services: React.FC = () => {
             <motion.div
               key={idx}
               variants={card}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              className="service-card group bg-white p-8 rounded-2xl border border-zinc-200 hover:border-zinc-300 hover:shadow-xl transition-all duration-300 flex flex-col"
+              className="service-card bg-white p-8 rounded-2xl border border-zinc-200 flex flex-col"
             >
-              <div className="w-12 h-12 bg-zinc-50 text-zinc-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-zinc-900 group-hover:text-white transition-colors duration-300">
+              <div className="w-12 h-12 bg-zinc-50 text-zinc-900 rounded-xl flex items-center justify-center mb-6">
                 {service.icon}
               </div>
               <h4 className="text-xl font-bold mb-3 text-zinc-900">{service.title}</h4>

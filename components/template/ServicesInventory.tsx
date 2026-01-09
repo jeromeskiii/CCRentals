@@ -60,7 +60,6 @@ type InventoryTab = 'standard' | 'luxury' | 'equipment';
 
 const ServicesInventory: React.FC = () => {
   const [activeTab, setActiveTab] = useState<InventoryTab>('standard');
-  const [hoveredService, setHoveredService] = useState<string | null>(null);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -166,20 +165,9 @@ const ServicesInventory: React.FC = () => {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.1 }}
-                  onMouseEnter={() => setHoveredService(`${activeTab}-${idx}`)}
-                  onMouseLeave={() => setHoveredService(null)}
-                  whileHover={{ scale: 1.02, y: -4 }}
-                  className="relative bg-card border border-border rounded-2xl p-6 sm:p-8 hover:shadow-xl hover:border-primary/30 transition-all duration-300 cursor-pointer group"
+                  className="relative bg-card border border-border rounded-2xl p-6 sm:p-8"
                 >
-                  <div className="absolute top-3 sm:top-4 right-3 sm:right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="flex items-center gap-1 text-xs font-semibold text-primary">
-                      View Details
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </span>
-                  </div>
-                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary/5 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-primary/10 transition-colors">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary/5 rounded-2xl flex items-center justify-center mb-4 sm:mb-6">
                     <svg className="w-6 h-6 sm:w-7 sm:h-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>

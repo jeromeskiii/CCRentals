@@ -31,7 +31,7 @@ const ServiceAreas: React.FC = () => {
 
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
-    show: { opacity: 1, x: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+    show: { opacity: 1, x: 0, transition: { duration: 0.4 } },
   };
 
   return (
@@ -141,8 +141,7 @@ const ServiceAreas: React.FC = () => {
                   <motion.div
                     key={idx}
                     variants={itemVariants}
-                    whileHover={{ scale: 1.05 }}
-                    className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-secondary/50 rounded-lg border border-border hover:bg-secondary/70 transition-colors cursor-pointer"
+                    className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-secondary/50 rounded-lg border border-border"
                   >
                     <span className="w-1.5 h-1.5 bg-primary rounded-full" />
                     <span className="text-xs sm:text-sm font-medium text-foreground">{county}</span>
@@ -165,8 +164,7 @@ const ServiceAreas: React.FC = () => {
                   <motion.div
                     key={idx}
                     variants={itemVariants}
-                    whileHover={{ scale: 1.05 }}
-                    className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-secondary/30 rounded-lg border border-border hover:bg-secondary/50 transition-colors cursor-pointer"
+                    className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-secondary/30 rounded-lg border border-border"
                   >
                     <svg className="w-3 h-3 sm:w-4 sm:h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -179,17 +177,17 @@ const ServiceAreas: React.FC = () => {
             </div>
 
             {/* CTA */}
-            <button className="group flex items-center gap-3 font-bold text-sm sm:text-base text-foreground hover:text-primary transition-colors">
+            <div className="flex items-center gap-3 font-bold text-sm sm:text-base text-foreground">
               <span>View Detailed Coverage Map</span>
               <svg
-                className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-2 transition-transform"
+                className="w-4 h-4 sm:w-5 sm:h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-            </button>
+            </div>
           </motion.div>
         </div>
       </div>

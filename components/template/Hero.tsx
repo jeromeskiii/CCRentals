@@ -164,7 +164,7 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal }) => {
             <span className="hidden sm:inline">Sanitation Excellence Guaranteed</span>
             <span className="sm:hidden">Excellence Guaranteed</span>
           </div>
-          
+
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 sm:mb-6 leading-[1.1] tracking-tight">
             {headlineWords.map((word, index) => (
               <span key={index} className="hero-word-container inline-block">
@@ -173,22 +173,25 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal }) => {
               </span>
             ))}
           </h1>
-          
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-10 leading-relaxed max-w-xl hero-sub">
-            From luxury weddings to heavy-duty construction sites, we provide the cleanest portable toilets, restroom trailers, and temporary fencing across Southern California.
+
+          <p className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-3 sm:mb-4 leading-tight max-w-xl hero-sub">
+            Professional vacation rental cleaning for coastal properties.
+          </p>
+          <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10 leading-relaxed max-w-xl hero-sub">
+            From luxury weddings to heavy-duty construction sites, we provide cleanest portable toilets, restroom trailers, and temporary fencing across Southern California.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-12 sm:mb-16 hero-cta">
-            <button 
+            <button
               onClick={() => openLeadModal('hero_primary')}
-              className="px-6 sm:px-8 py-3 sm:py-4 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2"
+              className="px-8 sm:px-10 py-4 sm:py-5 bg-primary text-primary-foreground font-bold text-lg sm:text-xl rounded-xl hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 flex-1 sm:flex-none"
             >
-              Request Service
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              Get a Quote
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </button>
-            <a 
+            <a
               href="tel:424-262-2906"
               className="px-6 sm:px-8 py-3 sm:py-4 bg-secondary text-secondary-foreground font-bold rounded-xl border border-border hover:bg-secondary/80 hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
             >

@@ -72,10 +72,13 @@ export const checkRateLimit = (
     timeWindowMs: number = 60 * 60 * 1000 // 1 hour
 ): boolean => {
     const now = Date.now();
-    // Remove timestamps older than time window
+    // Remove timestamps older than time window and update the array
     const recentTimestamps = submissionTimestamps.filter(
         timestamp => now - timestamp < timeWindowMs
     );
+    // Update the array to only contain recent timestamps
+    submissionTimestamps.length = 0;
+    submissionTimestamps.push(...recentTimestamps);
     
     if (recentTimestamps.length >= maxSubmissions) {
         return false; // Rate limit exceeded

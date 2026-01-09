@@ -36,7 +36,7 @@ const container = {
 
 const card = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  show: { opacity: 1, y: 0, transition: { duration: 0.4 } }
 };
 
 const Industries: React.FC = () => {
@@ -68,11 +68,9 @@ const Industries: React.FC = () => {
             <motion.div
               key={i}
               variants={card}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              className="industry-card p-10 bg-zinc-900 border border-zinc-800 rounded-[32px] hover:bg-zinc-800 transition-all group text-center flex flex-col items-center"
+              className="industry-card p-10 bg-zinc-900 border border-zinc-800 rounded-[32px] group text-center flex flex-col items-center"
             >
-              <div className="text-5xl mb-6 grayscale group-hover:grayscale-0 transition-all duration-300">
+              <div className="text-5xl mb-6">
                 {item.icon}
               </div>
               <h4 className="text-2xl font-bold mb-4">{item.title}</h4>
