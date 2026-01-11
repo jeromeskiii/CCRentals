@@ -9,7 +9,7 @@ import prettierPlugin from 'eslint-plugin-prettier';
 
 export default [
   {
-    ignores: ['dist', 'node_modules', '**/build/**']
+    ignores: ['dist', 'node_modules', '**/build/**'],
   },
   js.configs.recommended,
   {
@@ -19,7 +19,7 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'module',
       parserOptions: {
-        ecmaFeatures: { jsx: true }
+        ecmaFeatures: { jsx: true },
       },
       globals: {
         // Browser globals
@@ -35,24 +35,27 @@ export default [
         IntersectionObserverEntry: 'readonly',
         Element: 'readonly',
         Document: 'readonly',
-        requestAnimationFrame: 'readonly'
-      }
+        requestAnimationFrame: 'readonly',
+      },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
       react: reactPlugin,
       'react-hooks': reactHooks,
-      prettier: prettierPlugin
+      prettier: prettierPlugin,
     },
     settings: {
-      react: { version: 'detect' }
+      react: { version: 'detect' },
     },
     rules: {
       // TypeScript
       ...(tsPlugin.configs.recommended?.rules || {}),
       ...(tsPlugin.configs['stylistic']?.rules || {}),
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-inferrable-types': 'off',
 
       // React
@@ -65,15 +68,15 @@ export default [
 
       // General
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'prettier/prettier': 'warn'
-    }
+      'prettier/prettier': 'warn',
+    },
   },
   // TS files: rely on TypeScript for undefined checks
   {
     files: ['**/*.{ts,tsx}'],
     rules: {
-      'no-undef': 'off'
-    }
+      'no-undef': 'off',
+    },
   },
   // Tests (Vitest / Testing Library)
   {
@@ -87,17 +90,23 @@ export default [
         beforeAll: 'readonly',
         afterAll: 'readonly',
         beforeEach: 'readonly',
-        afterEach: 'readonly'
-      }
+        afterEach: 'readonly',
+      },
     },
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-empty-function': 'off'
-    }
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-empty-function': 'off',
+    },
   },
   // Node/config files
   {
-    files: ['*.config.*', 'vite.config.*', 'vitest.config.*', 'tailwind.config.*', 'eslint.config.*'],
+    files: [
+      '*.config.*',
+      'vite.config.*',
+      'vitest.config.*',
+      'tailwind.config.*',
+      'eslint.config.*',
+    ],
     languageOptions: {
       sourceType: 'module',
       globals: {
@@ -106,12 +115,12 @@ export default [
         require: 'readonly',
         __dirname: 'readonly',
         process: 'readonly',
-        URL: 'readonly'
-      }
+        URL: 'readonly',
+      },
     },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
-      '@typescript-eslint/no-explicit-any': 'off'
-    }
-  }
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 ];

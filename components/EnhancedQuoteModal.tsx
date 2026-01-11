@@ -16,11 +16,11 @@ type Step = 'service' | 'details' | 'contact' | 'success';
 const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   open,
   onClose,
-  prefilledQuote
+  prefilledQuote,
 }) => {
   const { modalRef } = useModalA11y({
     isOpen: open,
-    onClose
+    onClose,
   });
 
   const [currentStep, setCurrentStep] = useState<Step>('service');
@@ -28,7 +28,9 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   const successTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Form state
-  const [serviceType, setServiceType] = useState(prefilledQuote?.serviceType || 'Standard Portable Toilet');
+  const [serviceType, setServiceType] = useState(
+    prefilledQuote?.serviceType || 'Standard Portable Toilet'
+  );
   const [units, setUnits] = useState(prefilledQuote?.units || 1);
   const [duration, setDuration] = useState(prefilledQuote?.duration || 7);
   const [startDate, setStartDate] = useState(prefilledQuote?.startDate || '');
@@ -47,7 +49,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   // Sync form state when modal opens or prefilledQuote changes
   useEffect(() => {
     if (!open) return;
-    
+
     if (prefilledQuote) {
       setServiceType(prefilledQuote.serviceType);
       setUnits(prefilledQuote.units);
@@ -84,7 +86,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
     'Sporting Event',
     'Community Gathering',
     'Emergency Response',
-    'Other'
+    'Other',
   ];
 
   const resetForm = () => {
@@ -170,7 +172,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
         notes: sanitizedNotes,
         source: 'enhanced_quote_modal',
         status: 'new',
-        is_emergency: false
+        is_emergency: false,
       });
 
       setCurrentStep('success');
@@ -195,10 +197,10 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
     const steps = [
       { id: 'service', label: 'Service', number: 1 },
       { id: 'details', label: 'Details', number: 2 },
-      { id: 'contact', label: 'Contact', number: 3 }
+      { id: 'contact', label: 'Contact', number: 3 },
     ];
 
-    const currentStepIndex = steps.findIndex(s => s.id === currentStep);
+    const currentStepIndex = steps.findIndex((s) => s.id === currentStep);
 
     return (
       <div className="flex items-center justify-between mb-8">
@@ -214,9 +216,11 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
               >
                 {index < currentStepIndex ? '✓' : step.number}
               </div>
-              <span className={`ml-2 text-sm font-medium hidden sm:inline ${
-                index <= currentStepIndex ? 'text-foreground' : 'text-muted-foreground'
-              }`}>
+              <span
+                className={`ml-2 text-sm font-medium hidden sm:inline ${
+                  index <= currentStepIndex ? 'text-foreground' : 'text-muted-foreground'
+                }`}
+              >
                 {step.label}
               </span>
             </div>
@@ -238,7 +242,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   const renderServiceStep = () => (
     <div className="space-y-6">
       <h3 className="text-2xl font-bold text-foreground">Select Your Service</h3>
-      
+
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {serviceTypes.map((service) => (
           <button
@@ -258,9 +262,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-bold text-foreground mb-2">
-            Number of Units
-          </label>
+          <label className="block text-sm font-bold text-foreground mb-2">Number of Units</label>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setUnits(Math.max(1, units - 1))}
@@ -311,9 +313,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-bold text-foreground mb-2">
-            Event Type
-          </label>
+          <label className="block text-sm font-bold text-foreground mb-2">Event Type</label>
           <select
             value={eventType}
             onChange={(e) => setEventType(e.target.value)}
@@ -321,15 +321,15 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
           >
             <option value="">Select type...</option>
             {eventTypes.map((type) => (
-              <option key={type} value={type}>{type}</option>
+              <option key={type} value={type}>
+                {type}
+              </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-foreground mb-2">
-            Expected Attendees
-          </label>
+          <label className="block text-sm font-bold text-foreground mb-2">Expected Attendees</label>
           <input
             type="number"
             value={attendees}
@@ -341,9 +341,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-foreground mb-2">
-          Start Date
-        </label>
+        <label className="block text-sm font-bold text-foreground mb-2">Start Date</label>
         <input
           type="date"
           value={startDate}
@@ -354,9 +352,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-foreground mb-2">
-          Delivery Address
-        </label>
+        <label className="block text-sm font-bold text-foreground mb-2">Delivery Address</label>
         <input
           type="text"
           value={address}
@@ -430,15 +426,11 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
             }`}
             placeholder="(555) 123-4567"
           />
-          {phoneError && (
-            <p className="text-red-500 text-sm mt-1">{phoneError}</p>
-          )}
+          {phoneError && <p className="text-red-500 text-sm mt-1">{phoneError}</p>}
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-foreground mb-2">
-            Email
-          </label>
+          <label className="block text-sm font-bold text-foreground mb-2">Email</label>
           <input
             type="email"
             value={email}
@@ -449,16 +441,12 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
             }`}
             placeholder="john@company.com (optional)"
           />
-          {emailError && (
-            <p className="text-red-500 text-sm mt-1">{emailError}</p>
-          )}
+          {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-bold text-foreground mb-2">
-          Company (Optional)
-        </label>
+        <label className="block text-sm font-bold text-foreground mb-2">Company (Optional)</label>
         <input
           type="text"
           value={company}
@@ -509,14 +497,30 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
         </button>
         <button
           onClick={handleSubmit}
-          disabled={isSubmitting || !name || !phone || !email}
+          disabled={isSubmitting || !name || !phone}
           className="flex-1 py-3 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isSubmitting ? (
             <>
-              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Submitting...
             </>
@@ -541,7 +545,12 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
       </p>
       <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+          />
         </svg>
         Check your email for confirmation
       </div>
@@ -551,7 +560,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   return (
     <AnimatePresence>
       {open && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           role="presentation"
         >
@@ -575,14 +584,26 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
           >
             <div className="p-6 sm:p-8">
               <div className="flex justify-between items-center mb-6">
-                <h2 id="quote-modal-title" className="text-2xl font-bold text-foreground">Request a Quote</h2>
+                <h2 id="quote-modal-title" className="text-2xl font-bold text-foreground">
+                  Request a Quote
+                </h2>
                 <button
                   onClick={handleClose}
                   className="p-2 hover:bg-secondary rounded-full transition-colors"
                   aria-label="Close quote request modal"
                 >
-                  <svg className="w-6 h-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-6 h-6 text-muted-foreground"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>

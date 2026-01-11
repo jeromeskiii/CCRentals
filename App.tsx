@@ -12,7 +12,6 @@ import {
   ReviewsFallback,
   ServiceAreasFallback,
   CTAFallback,
-  ModalFallback,
 } from './components/SectionFallbacks';
 
 const Hero = lazy(() => import('./components/template/Hero'));
