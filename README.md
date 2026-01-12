@@ -32,7 +32,7 @@ We use a custom hook `useModalA11y` to standardize modal accessibility across th
 **Usage:**
 
 ```typescript
-import { useModalA11y } from '../lib/useModalA11y';
+import { useModalA11y } from '../hooks/useModalA11y';
 
 const MyModal = ({ open, onClose }) => {
   const { modalRef } = useModalA11y({

@@ -23,8 +23,8 @@ const services: ServiceOption[] = [
       'Standard supplies',
       'Door lock',
       'Ventilation',
-      'Waste tank: 60 gallons'
-    ]
+      'Waste tank: 60 gallons',
+    ],
   },
   {
     name: 'Deluxe Unit with Sink',
@@ -39,8 +39,8 @@ const services: ServiceOption[] = [
       'Paper towel dispenser',
       'Mirror',
       'Enhanced ventilation',
-      'Waste tank: 60 gallons'
-    ]
+      'Waste tank: 60 gallons',
+    ],
   },
   {
     name: 'ADA Compliant Units',
@@ -50,13 +50,13 @@ const services: ServiceOption[] = [
     bestFor: 'Public events, compliance requirements',
     features: [
       'Wheelchair accessible',
-      'Spacious interior (5\' × 5\')',
+      "Spacious interior (5' × 5')",
       'Grab bars',
       'Low-entry ramp',
       'Hand sanitizer',
       'Waste tank: 70 gallons',
-      'ADA compliant signage'
-    ]
+      'ADA compliant signage',
+    ],
   },
   {
     name: '2-Stall Luxury Trailer',
@@ -72,8 +72,8 @@ const services: ServiceOption[] = [
       'Hot/cold running water',
       'Flushing toilets',
       'Full-length mirrors',
-      'Hardwood floors'
-    ]
+      'Hardwood floors',
+    ],
   },
   {
     name: '4-Stall Luxury Trailer',
@@ -90,8 +90,8 @@ const services: ServiceOption[] = [
       'Attendant area',
       'Marble countertops',
       'Designer fixtures',
-      'On-site attendant available'
-    ]
+      'On-site attendant available',
+    ],
   },
   {
     name: 'Handwash Stations',
@@ -105,9 +105,9 @@ const services: ServiceOption[] = [
       'Running water',
       'Foot-pump operation',
       'Waste tank: 30 gallons',
-      'No power required'
-    ]
-  }
+      'No power required',
+    ],
+  },
 ];
 
 interface ServiceComparisonProps {
@@ -117,13 +117,13 @@ interface ServiceComparisonProps {
 const ServiceComparison: React.FC<ServiceComparisonProps> = ({ onSelectService }) => {
   const [selectedServices, setSelectedServices] = useState<string[]>([
     'Standard Portable Toilet',
-    'Deluxe Unit with Sink'
+    'Deluxe Unit with Sink',
   ]);
 
   const toggleService = (serviceName: string) => {
     if (selectedServices.includes(serviceName)) {
       if (selectedServices.length > 1) {
-        setSelectedServices(selectedServices.filter(s => s !== serviceName));
+        setSelectedServices(selectedServices.filter((s) => s !== serviceName));
       }
     } else {
       if (selectedServices.length < 3) {
@@ -134,15 +134,15 @@ const ServiceComparison: React.FC<ServiceComparisonProps> = ({ onSelectService }
 
   const compareFeatures = () => {
     const allFeatures = new Set<string>();
-    selectedServices.forEach(serviceName => {
-      const service = services.find(s => s.name === serviceName);
-      service?.features.forEach(f => allFeatures.add(f));
+    selectedServices.forEach((serviceName) => {
+      const service = services.find((s) => s.name === serviceName);
+      service?.features.forEach((f) => allFeatures.add(f));
     });
     return Array.from(allFeatures);
   };
 
   const hasFeature = (serviceName: string, feature: string) => {
-    const service = services.find(s => s.name === serviceName);
+    const service = services.find((s) => s.name === serviceName);
     return service?.features.includes(feature) || false;
   };
 
@@ -152,9 +152,7 @@ const ServiceComparison: React.FC<ServiceComparisonProps> = ({ onSelectService }
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-          Compare Services
-        </h2>
+        <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">Compare Services</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">
           Select up to 3 services to compare features side-by-side
         </p>
@@ -174,9 +172,7 @@ const ServiceComparison: React.FC<ServiceComparisonProps> = ({ onSelectService }
             }`}
           >
             <div className="text-3xl mb-2">{service.icon}</div>
-            <div className="text-xs font-bold text-foreground line-clamp-2">
-              {service.name}
-            </div>
+            <div className="text-xs font-bold text-foreground line-clamp-2">{service.name}</div>
             {selectedServices.includes(service.name) && (
               <div className="mt-2 text-primary text-xs font-bold">✓ Selected</div>
             )}
@@ -187,13 +183,16 @@ const ServiceComparison: React.FC<ServiceComparisonProps> = ({ onSelectService }
       {/* Comparison Table */}
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full">
-          <div className="grid gap-6" style={{ gridTemplateColumns: `200px repeat(${selectedServices.length}, 1fr)` }}>
+          <div
+            className="grid gap-6"
+            style={{ gridTemplateColumns: `200px repeat(${selectedServices.length}, 1fr)` }}
+          >
             {/* Header Row */}
             <div className="font-bold text-foreground text-sm sticky left-0 bg-background z-10">
               Service Details
             </div>
             {selectedServices.map((serviceName) => {
-              const service = services.find(s => s.name === serviceName)!;
+              const service = services.find((s) => s.name === serviceName)!;
               return (
                 <motion.div
                   key={serviceName}
@@ -205,8 +204,18 @@ const ServiceComparison: React.FC<ServiceComparisonProps> = ({ onSelectService }
                     onClick={() => toggleService(serviceName)}
                     className="absolute top-3 right-3 p-1 hover:bg-secondary rounded-full transition-colors"
                   >
-                    <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="w-4 h-4 text-muted-foreground"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                   <div className="text-4xl mb-3">{service.icon}</div>
@@ -246,14 +255,34 @@ const ServiceComparison: React.FC<ServiceComparisonProps> = ({ onSelectService }
                       <div key={serviceName} className="flex justify-center">
                         {hasFeature(serviceName, feature) ? (
                           <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                            <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            <svg
+                              className="w-4 h-4 text-primary"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={3}
+                                d="M5 13l4 4L19 7"
+                              />
                             </svg>
                           </div>
                         ) : (
                           <div className="w-6 h-6 rounded-full bg-muted/10 flex items-center justify-center">
-                            <svg className="w-4 h-4 text-muted-foreground/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            <svg
+                              className="w-4 h-4 text-muted-foreground/30"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
                             </svg>
                           </div>
                         )}
@@ -277,7 +306,12 @@ const ServiceComparison: React.FC<ServiceComparisonProps> = ({ onSelectService }
           className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 hover:scale-105 transition-all"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+            />
           </svg>
           Call (424) 262-2906
         </a>

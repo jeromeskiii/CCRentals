@@ -2,7 +2,7 @@ import React, { useId, useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../lib/api';
 import { leadSubmissionSchema, sanitizeInput, sanitizeEmail } from '../lib/validation';
-import { useModalA11y } from '../lib/useModalA11y';
+import { useModalA11y } from '../hooks/useModalA11y';
 
 interface ServiceRequestModalProps {
   open: boolean;

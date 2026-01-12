@@ -2,7 +2,7 @@ import { useState, useCallback, useContext, createContext, ReactNode } from 'rea
 
 /**
  * Modal state management with proper ownership boundaries
- * 
+ *
  * Design principles:
  * - App doesn't know modal implementation details
  * - Modals are decoupled from App state
@@ -37,40 +37,42 @@ export const ModalManagerProvider: React.FC<ModalManagerProviderProps> = ({ chil
   const [modals, setModals] = useState<Record<string, ModalState>>({});
 
   const openModal = useCallback((id: string, props: Record<string, any> = {}) => {
-    setModals(prev => ({
+    setModals((prev) => ({
       ...prev,
-      [id]: { open: true, props }
+      [id]: { open: true, props },
     }));
   }, []);
 
   const closeModal = useCallback((id: string) => {
-    setModals(prev => ({
+    setModals((prev) => ({
       ...prev,
-      [id]: { open: false, props: {} }
+      [id]: { open: false, props: {} },
     }));
   }, []);
 
-  const isModalOpen = useCallback((id: string) => {
-    return modals[id]?.open || false;
-  }, [modals]);
+  const isModalOpen = useCallback(
+    (id: string) => {
+      return modals[id]?.open || false;
+    },
+    [modals]
+  );
 
-  const getModalProps = useCallback((id: string) => {
-    return modals[id]?.props || {};
-  }, [modals]);
+  const getModalProps = useCallback(
+    (id: string) => {
+      return modals[id]?.props || {};
+    },
+    [modals]
+  );
 
   const value: ModalManagerContextValue = {
     modals,
     openModal,
     closeModal,
     isModalOpen,
-    getModalProps
+    getModalProps,
   };
 
-  return (
-    <ModalManagerContext.Provider value={value}>
-      {children}
-    </ModalManagerContext.Provider>
-  );
+  return <ModalManagerContext.Provider value={value}>{children}</ModalManagerContext.Provider>;
 };
 
 /**
@@ -104,6 +106,6 @@ export const useModal = (modalId: string) => {
     isOpen: isModalOpen(modalId),
     open: (props?: Record<string, any>) => openModal(modalId, props),
     close: () => closeModal(modalId),
-    props: getModalProps(modalId)
+    props: getModalProps(modalId),
   };
 };

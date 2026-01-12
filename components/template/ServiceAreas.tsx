@@ -11,13 +11,7 @@ const serviceAreas = {
     'Riverside County',
     'Santa Barbara County',
   ],
-  cities: [
-    'Long Beach',
-    'Malibu',
-    'Anaheim',
-    'Huntington Beach',
-    'Inland Empire',
-  ],
+  cities: ['Long Beach', 'Malibu', 'Anaheim', 'Huntington Beach', 'Inland Empire'],
 };
 
 const ServiceAreas: React.FC = () => {
@@ -64,7 +58,7 @@ const ServiceAreas: React.FC = () => {
                 >
                   {/* Clean Style: Background Fill + Primary Stroke (No Gradients) */}
                   <path
-                    d="M40,60 L120,60 L240,110 L300,160 L290,190 L260,200 L230,190 L200,185 L160,180 L130,160 L100,140 L70,100 L40,80 Z" 
+                    d="M40,60 L120,60 L240,110 L300,160 L290,190 L260,200 L230,190 L200,185 L160,180 L130,160 L100,140 L70,100 L40,80 Z"
                     fill="oklch(var(--background))"
                     stroke="oklch(var(--primary))"
                     strokeWidth="2"
@@ -74,16 +68,40 @@ const ServiceAreas: React.FC = () => {
 
                   {/* City Markers - Using Theme Colors */}
                   {/* Los Angeles (Center) */}
-                  <circle cx="160" cy="140" r="6" fill="oklch(var(--primary))" className="animate-pulse" />
-                  
+                  <circle
+                    cx="160"
+                    cy="140"
+                    r="6"
+                    fill="oklch(var(--primary))"
+                    className="animate-pulse"
+                  />
+
                   {/* San Diego (Bottom Right) */}
-                  <circle cx="250" cy="180" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
-                  
+                  <circle
+                    cx="250"
+                    cy="180"
+                    r="5"
+                    fill="oklch(var(--primary))"
+                    className="animate-pulse"
+                  />
+
                   {/* Santa Barbara (Top Left) */}
-                  <circle cx="80" cy="90" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
-                  
+                  <circle
+                    cx="80"
+                    cy="90"
+                    r="5"
+                    fill="oklch(var(--primary))"
+                    className="animate-pulse"
+                  />
+
                   {/* Inland Empire */}
-                  <circle cx="210" cy="140" r="5" fill="oklch(var(--primary))" className="animate-pulse" />
+                  <circle
+                    cx="210"
+                    cy="140"
+                    r="5"
+                    fill="oklch(var(--primary))"
+                    className="animate-pulse"
+                  />
 
                   {/* Secondary Cities - Using Muted/Secondary Token */}
                   <circle cx="170" cy="150" r="3" fill="oklch(var(--muted-foreground))" />
@@ -114,22 +132,26 @@ const ServiceAreas: React.FC = () => {
           >
             <div className="flex items-center gap-2 mb-3 sm:mb-4">
               <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-              <span className="text-xs sm:text-sm font-bold text-primary uppercase tracking-widest">Operational Range</span>
+              <span className="text-xs sm:text-sm font-bold text-primary uppercase tracking-widest">
+                Operational Range
+              </span>
             </div>
-            
+
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4 sm:mb-6">
               Serving Southern California
             </h2>
-            
+
             <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10 leading-relaxed">
-              Coastal Clean operates one of the largest sanitation fleets in the region. 
-              We offer same-day delivery for emergency site needs and consistent weekly service routes 
-              across all our coverage areas.
+              Coastal Clean operates one of the largest sanitation fleets in the region. We offer
+              same-day delivery for emergency site needs and consistent weekly service routes across
+              all our coverage areas.
             </p>
 
             {/* Counties */}
             <div className="mb-6 sm:mb-8">
-              <h3 className="text-xs sm:text-sm font-bold text-foreground uppercase tracking-wider mb-3 sm:mb-4">Counties</h3>
+              <h3 className="text-xs sm:text-sm font-bold text-foreground uppercase tracking-wider mb-3 sm:mb-4">
+                Counties
+              </h3>
               <motion.div
                 variants={containerVariants}
                 initial="hidden"
@@ -152,7 +174,9 @@ const ServiceAreas: React.FC = () => {
 
             {/* Cities */}
             <div className="mb-8 sm:mb-10">
-              <h3 className="text-xs sm:text-sm font-bold text-foreground uppercase tracking-wider mb-3 sm:mb-4">Key Cities</h3>
+              <h3 className="text-xs sm:text-sm font-bold text-foreground uppercase tracking-wider mb-3 sm:mb-4">
+                Key Cities
+              </h3>
               <motion.div
                 variants={containerVariants}
                 initial="hidden"
@@ -166,9 +190,24 @@ const ServiceAreas: React.FC = () => {
                     variants={itemVariants}
                     className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-secondary/30 rounded-lg border border-border"
                   >
-                    <svg className="w-3 h-3 sm:w-4 sm:h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                      className="w-3 h-3 sm:w-4 sm:h-4 text-primary"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
                     </svg>
                     <span className="text-xs sm:text-sm font-medium text-foreground">{city}</span>
                   </motion.div>
@@ -185,7 +224,12 @@ const ServiceAreas: React.FC = () => {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
               </svg>
             </div>
           </motion.div>

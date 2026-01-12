@@ -26,5 +26,20 @@ export default defineConfig(({ mode }) => {
         '@': resolve(fileURLToPath(new URL('.', import.meta.url))),
       },
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Split animation libraries into separate chunks
+            'framer-motion': ['framer-motion'],
+            gsap: ['gsap'],
+            // Split React into its own chunk
+            react: ['react', 'react-dom'],
+            // Split Supabase client
+            supabase: ['@supabase/supabase-js'],
+          },
+        },
+      },
+    },
   };
 });

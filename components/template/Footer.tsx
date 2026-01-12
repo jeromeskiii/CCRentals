@@ -49,10 +49,10 @@ const Footer: React.FC = () => {
               <span className="font-bold text-lg sm:text-xl">Coastal Clean</span>
             </div>
             <p className="text-background/70 mb-4 sm:mb-6 leading-relaxed max-w-sm text-sm sm:text-base">
-              Professional sanitation services and site equipment rentals across Southern California. 
-              From luxury wedding trailers to construction site facilities.
+              Professional sanitation services and site equipment rentals across Southern
+              California. From luxury wedding trailers to construction site facilities.
             </p>
-            
+
             {/* Trust Badges */}
             <div className="flex flex-wrap gap-2 sm:gap-4">
               <span className="px-3 py-1 bg-background/10 rounded-full text-xs font-medium">
@@ -66,7 +66,9 @@ const Footer: React.FC = () => {
 
           {/* Services Column */}
           <div>
-            <h4 className="font-bold mb-4 sm:mb-6 text-primary-foreground text-sm sm:text-base">Services</h4>
+            <h4 className="font-bold mb-4 sm:mb-6 text-primary-foreground text-sm sm:text-base">
+              Services
+            </h4>
             <ul className="space-y-2 sm:space-y-3">
               {footerLinks.services.map((link, idx) => (
                 <li key={idx}>
@@ -83,7 +85,9 @@ const Footer: React.FC = () => {
 
           {/* Company Column */}
           <div>
-            <h4 className="font-bold mb-4 sm:mb-6 text-primary-foreground text-sm sm:text-base">Company</h4>
+            <h4 className="font-bold mb-4 sm:mb-6 text-primary-foreground text-sm sm:text-base">
+              Company
+            </h4>
             <ul className="space-y-2 sm:space-y-3">
               {footerLinks.company.map((link, idx) => (
                 <li key={idx}>
@@ -100,7 +104,9 @@ const Footer: React.FC = () => {
 
           {/* Service Areas Column */}
           <div>
-            <h4 className="font-bold mb-4 sm:mb-6 text-primary-foreground text-sm sm:text-base">Service Areas</h4>
+            <h4 className="font-bold mb-4 sm:mb-6 text-primary-foreground text-sm sm:text-base">
+              Service Areas
+            </h4>
             <ul className="space-y-2 sm:space-y-3">
               {serviceAreas.map((area, idx) => (
                 <li key={idx}>
@@ -131,7 +137,12 @@ const Footer: React.FC = () => {
                 className="flex items-center gap-2 text-background/80 hover:text-primary transition-colors text-xs sm:text-sm"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                  />
                 </svg>
                 (424) 262-2906
               </a>
@@ -140,7 +151,12 @@ const Footer: React.FC = () => {
                 className="flex items-center gap-2 text-background/80 hover:text-primary transition-colors text-xs sm:text-sm"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
                 </svg>
                 info@coastalclean.com
               </a>

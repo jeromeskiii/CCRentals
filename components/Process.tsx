@@ -1,24 +1,24 @@
-
 import React from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 const steps = [
   {
-    num: "01",
-    title: "Request Service",
-    description: "Tell us your dates and needs. We'll confirm availability within minutes."
+    num: '01',
+    title: 'Request Service',
+    description: "Tell us your dates and needs. We'll confirm availability within minutes.",
   },
   {
-    num: "02",
-    title: "Professional Clean",
-    description: "Our certified team follows a rigorous checklist for spotless results."
+    num: '02',
+    title: 'Professional Clean',
+    description: 'Our certified team follows a rigorous checklist for spotless results.',
   },
   {
-    num: "03",
-    title: "Relax & Earn",
-    description: "Welcome your guests to a pristine home. High turnover scores lead to better reviews and more revenue."
-  }
+    num: '03',
+    title: 'Relax & Earn',
+    description:
+      'Welcome your guests to a pristine home. High turnover scores lead to better reviews and more revenue.',
+  },
 ];
 
 const Process: React.FC = () => {
@@ -48,7 +48,7 @@ const Process: React.FC = () => {
         duration: 0.8,
         stagger: 0.2,
         ease: 'power3.out',
-        delay: 0.3
+        delay: 0.3,
       });
     });
 
@@ -60,8 +60,12 @@ const Process: React.FC = () => {
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           <div>
-            <h2 className="text-sm font-bold tracking-widest text-sky-600 uppercase mb-4">The Workflow</h2>
-            <h3 className="text-4xl md:text-5xl font-bold text-zinc-900 mb-8 leading-tight">How it works</h3>
+            <h2 className="text-sm font-bold tracking-widest text-sky-600 uppercase mb-4">
+              The Workflow
+            </h2>
+            <h3 className="text-4xl md:text-5xl font-bold text-zinc-900 mb-8 leading-tight">
+              How it works
+            </h3>
 
             <div className="space-y-10">
               {steps.map((step, idx) => (
@@ -71,9 +75,7 @@ const Process: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-xl font-bold text-zinc-900 mb-2">{step.title}</h4>
-                    <p className="text-zinc-600 leading-relaxed max-w-md">
-                      {step.description}
-                    </p>
+                    <p className="text-zinc-600 leading-relaxed max-w-md">{step.description}</p>
                   </div>
                 </div>
               ))}
@@ -94,7 +96,8 @@ const Process: React.FC = () => {
               />
               <div className="col-span-2 mt-4 bg-sky-600 p-8 rounded-2xl text-white">
                 <blockquote className="text-xl font-medium leading-relaxed italic mb-4">
-                  "Switching to Coastal Clean cut our management time in half. No more last-minute scheduling stress."
+                  "Switching to Coastal Clean cut our management time in half. No more last-minute
+                  scheduling stress."
                 </blockquote>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-sky-500 overflow-hidden">

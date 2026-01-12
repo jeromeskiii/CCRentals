@@ -49,7 +49,7 @@ describe('modal accessibility', () => {
 
     const dialog = screen.getByRole('dialog');
     const focusable = dialog.querySelectorAll<HTMLElement>(focusableSelector);
-    
+
     expect(focusable.length).toBeGreaterThan(0);
     expect(dialog).toHaveAttribute('aria-modal', 'true');
   });

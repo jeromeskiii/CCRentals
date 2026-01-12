@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BUSINESS_RULES } from '../config/businessRules';
 
@@ -18,7 +18,7 @@ const pricingTiers: Record<string, PricingTier> = {
     perDayRate: 15,
     perUnitRate: 125,
     description: 'Basic portable toilet for construction sites and events',
-    features: ['Daily service', 'Hand sanitizer', 'Standard supplies']
+    features: ['Daily service', 'Hand sanitizer', 'Standard supplies'],
   },
   'Deluxe Unit with Sink': {
     name: 'Deluxe Unit with Sink',
@@ -26,7 +26,7 @@ const pricingTiers: Record<string, PricingTier> = {
     perDayRate: 20,
     perUnitRate: 175,
     description: 'Enhanced unit with built-in handwashing station',
-    features: ['Built-in sink', 'Running water', 'Premium supplies']
+    features: ['Built-in sink', 'Running water', 'Premium supplies'],
   },
   'ADA Compliant Units': {
     name: 'ADA Compliant Units',
@@ -34,7 +34,7 @@ const pricingTiers: Record<string, PricingTier> = {
     perDayRate: 22,
     perUnitRate: 195,
     description: 'Wheelchair accessible with spacious interior',
-    features: ['ADA compliant', 'Wheelchair ramps', 'Grab bars']
+    features: ['ADA compliant', 'Wheelchair ramps', 'Grab bars'],
   },
   '2-Stall Luxury Trailer': {
     name: '2-Stall Luxury Trailer',
@@ -42,7 +42,7 @@ const pricingTiers: Record<string, PricingTier> = {
     perDayRate: 125,
     perUnitRate: 850,
     description: 'Climate-controlled luxury restroom for VIP events',
-    features: ['Climate control', 'Premium finishes', 'Music system', 'Lighting']
+    features: ['Climate control', 'Premium finishes', 'Music system', 'Lighting'],
   },
   '4-Stall Luxury Trailer': {
     name: '4-Stall Luxury Trailer',
@@ -50,7 +50,7 @@ const pricingTiers: Record<string, PricingTier> = {
     perDayRate: 195,
     perUnitRate: 1450,
     description: 'Full-service luxury with multiple stalls',
-    features: ['4 private stalls', 'Climate control', 'Premium amenities', 'Attendant available']
+    features: ['4 private stalls', 'Climate control', 'Premium amenities', 'Attendant available'],
   },
   'Handwash Stations': {
     name: 'Handwash Stations',
@@ -58,8 +58,8 @@ const pricingTiers: Record<string, PricingTier> = {
     perDayRate: 12,
     perUnitRate: 95,
     description: 'Standalone handwashing units',
-    features: ['Soap dispenser', 'Paper towels', 'Running water']
-  }
+    features: ['Soap dispenser', 'Paper towels', 'Running water'],
+  },
 };
 
 interface QuoteCalculatorProps {
@@ -85,7 +85,11 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
   const [serviceType, setServiceType] = useState<string>('Standard Portable Toilet');
   const [units, setUnits] = useState<number>(1);
   const [duration, setDuration] = useState<number>(7);
-  const [startDate, setStartDate] = useState<string>('');
+  const [startDate, setStartDate] = useState<string>(() => {
+    const today = new Date();
+    today.setDate(today.getDate() + 1);
+    return today.toISOString().split('T')[0];
+  });
   const [showBreakdown, setShowBreakdown] = useState(false);
 
   const calculateQuote = () => {
@@ -93,9 +97,13 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
     if (!tier) return null;
 
     const basePrice = tier.basePrice;
-    const durationCharge = tier.perDayRate * Math.max(0, duration - BUSINESS_RULES.pricing.includedDays);
+    const durationCharge =
+      tier.perDayRate * Math.max(0, duration - BUSINESS_RULES.pricing.includedDays);
     const unitCharge = tier.perUnitRate * Math.max(0, units - BUSINESS_RULES.pricing.includedUnits);
-    const deliveryFee = units >= BUSINESS_RULES.pricing.freeDeliveryThreshold ? 0 : BUSINESS_RULES.pricing.deliveryFee;
+    const deliveryFee =
+      units >= BUSINESS_RULES.pricing.freeDeliveryThreshold
+        ? 0
+        : BUSINESS_RULES.pricing.deliveryFee;
     const total = basePrice + durationCharge + unitCharge + deliveryFee;
 
     return {
@@ -103,7 +111,7 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
       durationCharge,
       unitCharge,
       deliveryFee,
-      total
+      total,
     };
   };
 
@@ -118,16 +126,10 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
         duration,
         startDate,
         estimatedTotal: quote.total,
-        breakdown: quote
+        breakdown: quote,
       });
     }
   };
-
-  useEffect(() => {
-    const today = new Date();
-    today.setDate(today.getDate() + 1);
-    setStartDate(today.toISOString().split('T')[0]);
-  }, []);
 
   return (
     <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-xl">
@@ -146,7 +148,11 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
           <label className="block text-sm font-bold text-foreground mb-3" id="service-type-label">
             Service Type
           </label>
-          <div className="grid sm:grid-cols-2 gap-3" role="radiogroup" aria-labelledby="service-type-label">
+          <div
+            className="grid sm:grid-cols-2 gap-3"
+            role="radiogroup"
+            aria-labelledby="service-type-label"
+          >
             {Object.keys(pricingTiers).map((type) => (
               <button
                 type="button"
@@ -182,9 +188,7 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
             role="region"
             aria-label="Selected service details"
           >
-            <p className="text-sm text-muted-foreground mb-2">
-              {selectedTier.description}
-            </p>
+            <p className="text-sm text-muted-foreground mb-2">{selectedTier.description}</p>
             <div className="flex flex-wrap gap-2">
               {selectedTier.features.map((feature, idx) => (
                 <span
@@ -213,10 +217,10 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
               -
             </button>
             <div className="flex-1 text-center">
-              <div id="units-value" className="text-3xl font-bold text-primary">{units}</div>
-              <div className="text-xs text-muted-foreground">
-                {units === 1 ? 'unit' : 'units'}
+              <div id="units-value" className="text-3xl font-bold text-primary">
+                {units}
               </div>
+              <div className="text-xs text-muted-foreground">{units === 1 ? 'unit' : 'units'}</div>
             </div>
             <button
               type="button"
@@ -249,7 +253,9 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
           />
           <div className="flex justify-between items-center mt-2">
             <span className="text-sm text-muted-foreground">1 day</span>
-            <span className="text-2xl font-bold text-primary" aria-live="polite">{duration}</span>
+            <span className="text-2xl font-bold text-primary" aria-live="polite">
+              {duration}
+            </span>
             <span className="text-sm text-muted-foreground">90 days</span>
           </div>
         </div>
@@ -279,9 +285,7 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
               aria-controls="price-breakdown-details"
               className="w-full flex items-center justify-between mb-4"
             >
-              <span className="text-sm font-bold text-muted-foreground">
-                Price Breakdown
-              </span>
+              <span className="text-sm font-bold text-muted-foreground">Price Breakdown</span>
               <svg
                 className={`w-5 h-5 text-muted-foreground transition-transform ${
                   showBreakdown ? 'rotate-180' : ''
@@ -291,7 +295,12 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
                 viewBox="0 0 24 24"
                 aria-hidden="true"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
@@ -345,9 +354,7 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
               <div className="flex justify-between items-center">
                 <div>
                   <div className="text-sm text-muted-foreground mb-1">Estimated Total</div>
-                  <div className="text-4xl font-bold text-primary">
-                    $${quote.total.toFixed(2)}
-                  </div>
+                  <div className="text-4xl font-bold text-primary">$${quote.total.toFixed(2)}</div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-muted-foreground">{units} units</div>
@@ -367,8 +374,19 @@ const QuoteCalculator: React.FC<QuoteCalculatorProps> = ({ onRequestQuote }) => 
               className="w-full mt-4 px-6 py-4 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2"
             >
               Request This Quote
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
               </svg>
             </button>
           </div>

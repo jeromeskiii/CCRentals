@@ -25,10 +25,7 @@ class TestIntersectionObserver implements IntersectionObserver {
   readonly rootMargin: string = '0px';
   readonly thresholds: readonly number[] = [];
 
-  constructor(
-    _callback: IntersectionObserverCallback,
-    _options?: IntersectionObserverInit
-  ) {}
+  constructor(_callback: IntersectionObserverCallback, _options?: IntersectionObserverInit) {}
 
   disconnect(): void {}
   observe(_target: Element): void {}

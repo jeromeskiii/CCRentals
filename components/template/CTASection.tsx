@@ -9,7 +9,8 @@ interface CTASectionProps {
 const CTASection: React.FC<CTASectionProps> = ({ openLeadModal: openLeadModalProp }) => {
   const modalManager = useOptionalModalManager();
   const openLeadModal =
-    openLeadModalProp || ((source: string) => modalManager?.openModal('service-request', { source }));
+    openLeadModalProp ||
+    ((source: string) => modalManager?.openModal('service-request', { source }));
   return (
     <section className="py-16 sm:py-20 md:py-24 bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 sm:px-6">
@@ -24,10 +25,10 @@ const CTASection: React.FC<CTASectionProps> = ({ openLeadModal: openLeadModalPro
               Ready to Get Started?
             </h2>
             <p className="text-base sm:text-lg md:text-xl opacity-90 mb-8 sm:mb-10 max-w-2xl mx-auto">
-              Whether you need a single unit or a full-service event setup, 
-              our team is ready to help. Same-day delivery available.
+              Whether you need a single unit or a full-service event setup, our team is ready to
+              help. Same-day delivery available.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <button
                 onClick={() => openLeadModal('cta_primary')}
@@ -35,7 +36,12 @@ const CTASection: React.FC<CTASectionProps> = ({ openLeadModal: openLeadModalPro
               >
                 Request Service
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
                 </svg>
               </button>
               <a

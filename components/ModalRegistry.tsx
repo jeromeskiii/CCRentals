@@ -6,7 +6,7 @@ import ConfirmationModal from './ConfirmationModal';
 
 /**
  * Modal Registry - Centralized modal rendering
- * 
+ *
  * Design principles:
  * - Single source of truth for which modals exist
  * - Modals register themselves, App doesn't need to know
@@ -23,16 +23,16 @@ const MODAL_REGISTRY: Record<string, ModalConfig> = {
   'service-request': {
     component: ServiceRequestModal,
     propMapping: {
-      source: 'source'
-    }
+      source: 'source',
+    },
   },
   'enhanced-quote': {
     component: EnhancedQuoteModal,
     propMapping: {
-      prefilledQuote: 'prefilledQuote'
-    }
+      prefilledQuote: 'prefilledQuote',
+    },
   },
-  'confirmation': {
+  confirmation: {
     component: ConfirmationModal,
     propMapping: {
       title: 'title',
@@ -41,9 +41,9 @@ const MODAL_REGISTRY: Record<string, ModalConfig> = {
       cancelText: 'cancelText',
       onConfirm: 'onConfirm',
       onCancel: 'onCancel',
-      variant: 'variant'
-    }
-  }
+      variant: 'variant',
+    },
+  },
 };
 
 /**
@@ -58,15 +58,15 @@ export const ModalRegistry: FC = () => {
     <>
       {Object.entries(MODAL_REGISTRY).map(([modalId, config]) => {
         const modalState = modals[modalId];
-        
+
         if (!modalState?.open) return null;
 
         const ModalComponent = config.component;
-        
+
         // Build props for the modal component
         const componentProps: Record<string, any> = {
           open: true,
-          onClose: () => closeModal(modalId)
+          onClose: () => closeModal(modalId),
         };
 
         // Map modal state props to component props

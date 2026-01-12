@@ -9,7 +9,8 @@ interface HeroProps {
 const Hero: React.FC<HeroProps> = ({ openLeadModal: openLeadModalProp }) => {
   const modalManager = useOptionalModalManager();
   const openLeadModal =
-    openLeadModalProp || ((source: string) => modalManager?.openModal('service-request', { source }));
+    openLeadModalProp ||
+    ((source: string) => modalManager?.openModal('service-request', { source }));
   const heroRef = useRef<HTMLElement>(null);
   const bgImageRef = useRef<HTMLImageElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -60,7 +61,7 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal: openLeadModalProp }) => {
       y: 20,
       x: -60,
       clipPath: 'inset(0% 100% 0% 0%)',
-      opacity: 0
+      opacity: 0,
     });
     gsap.set('.hero-sub', { opacity: 0, x: -40, y: 0 });
     gsap.set('.hero-cta', { opacity: 0, y: 30 });
@@ -77,56 +78,60 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal: openLeadModalProp }) => {
       stagger: wordStagger,
       ease: 'power4.out',
     })
-    .to(
-      '.hero-sub',
-      {
-        opacity: 1,
-        x: 0,
-        duration: subDuration,
-        ease: 'power3.out',
-      },
-      '-=0.3'
-    )
-    .to(
-      '.hero-cta',
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: 'back.out(1.4)',
-      },
-      '-=0.2'
-    )
-    .to(
-      '.hero-stat',
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-        stagger: 0.1,
-        ease: 'power3.out',
-      },
-      '-=0.3'
-    );
+      .to(
+        '.hero-sub',
+        {
+          opacity: 1,
+          x: 0,
+          duration: subDuration,
+          ease: 'power3.out',
+        },
+        '-=0.3'
+      )
+      .to(
+        '.hero-cta',
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'back.out(1.4)',
+        },
+        '-=0.2'
+      )
+      .to(
+        '.hero-stat',
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: 'power3.out',
+        },
+        '-=0.3'
+      );
 
     // Optimized parallax effect using GSAP quickTo for high-frequency updates
     // quickTo creates reusable animation functions, avoiding tween creation overhead
     const contentMoveX = gsap.quickTo(contentRef.current, 'x', {
       duration: 0.8,
-      ease: 'power2.out'
+      ease: 'power2.out',
     });
     const contentMoveY = gsap.quickTo(contentRef.current, 'y', {
       duration: 0.8,
-      ease: 'power2.out'
+      ease: 'power2.out',
     });
-    const bgMoveX = bgImageRef.current ? gsap.quickTo(bgImageRef.current, 'xPercent', {
-      duration: 1,
-      ease: 'power2.out'
-    }) : null;
-    const bgMoveY = bgImageRef.current ? gsap.quickTo(bgImageRef.current, 'yPercent', {
-      duration: 1,
-      ease: 'power2.out'
-    }) : null;
+    const bgMoveX = bgImageRef.current
+      ? gsap.quickTo(bgImageRef.current, 'xPercent', {
+          duration: 1,
+          ease: 'power2.out',
+        })
+      : null;
+    const bgMoveY = bgImageRef.current
+      ? gsap.quickTo(bgImageRef.current, 'yPercent', {
+          duration: 1,
+          ease: 'power2.out',
+        })
+      : null;
 
     // Throttle to ~30fps to reduce CPU/GPU usage on low-end devices
     let lastMoveTime = 0;
@@ -160,7 +165,10 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal: openLeadModalProp }) => {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative min-h-[85vh] md:min-h-[90vh] flex items-center overflow-hidden bg-card">
+    <section
+      ref={heroRef}
+      className="relative min-h-[85vh] md:min-h-[90vh] flex items-center overflow-hidden bg-card"
+    >
       {/* Background Image with Ken Burns Effect */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {imageError ? (
@@ -201,7 +209,8 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal: openLeadModalProp }) => {
             Professional vacation rental cleaning for coastal properties.
           </p>
           <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-10 leading-relaxed max-w-xl hero-sub">
-            From luxury weddings to heavy-duty construction sites, we provide cleanest portable toilets, restroom trailers, and temporary fencing across Southern California.
+            From luxury weddings to heavy-duty construction sites, we provide cleanest portable
+            toilets, restroom trailers, and temporary fencing across Southern California.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-12 sm:mb-16 hero-cta">
@@ -210,8 +219,18 @@ const Hero: React.FC<HeroProps> = ({ openLeadModal: openLeadModalProp }) => {
               className="px-8 sm:px-10 py-4 sm:py-5 bg-primary text-primary-foreground font-bold text-lg sm:text-xl rounded-xl hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/30 flex items-center justify-center gap-2 flex-1 sm:flex-none"
             >
               Get a Quote
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              <svg
+                className="w-5 h-5 sm:w-6 sm:h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
               </svg>
             </button>
             <a

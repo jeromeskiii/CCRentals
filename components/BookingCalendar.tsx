@@ -6,18 +6,25 @@ interface BookingCalendarProps {
   blockedDates?: Date[];
 }
 
-const BookingCalendar: React.FC<BookingCalendarProps> = ({
-  onDateSelect,
-  blockedDates = []
-}) => {
+const BookingCalendar: React.FC<BookingCalendarProps> = ({ onDateSelect, blockedDates = [] }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -53,7 +60,7 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
   };
 
   const isDateBlocked = (date: Date) => {
-    return blockedDates.some(blocked => isSameDay(blocked, date));
+    return blockedDates.some((blocked) => isSameDay(blocked, date));
   };
 
   const isDateInPast = (date: Date) => {
@@ -122,12 +129,8 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
     <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-xl">
       {/* Header */}
       <div className="mb-6">
-        <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-          Select Rental Dates
-        </h3>
-        <p className="text-muted-foreground text-sm">
-          Choose your start and end dates
-        </p>
+        <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">Select Rental Dates</h3>
+        <p className="text-muted-foreground text-sm">Choose your start and end dates</p>
       </div>
 
       {/* Month Navigation */}
@@ -137,8 +140,18 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
           className="p-2 hover:bg-secondary rounded-lg transition-colors"
           aria-label="Previous month"
         >
-          <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-5 h-5 text-foreground"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
         </button>
         <div className="text-lg font-bold text-foreground">
@@ -149,7 +162,12 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
           className="p-2 hover:bg-secondary rounded-lg transition-colors"
           aria-label="Next month"
         >
-          <svg className="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-5 h-5 text-foreground"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
@@ -189,13 +207,14 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
               whileTap={!isDisabled ? { scale: 0.95 } : {}}
               className={`
                 aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all
-                ${isStart || isEnd
-                  ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25 z-10'
-                  : isInRange
-                  ? 'bg-primary/20 text-foreground'
-                  : isDisabled
-                  ? 'text-muted-foreground/30 cursor-not-allowed'
-                  : 'hover:bg-secondary text-foreground'
+                ${
+                  isStart || isEnd
+                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25 z-10'
+                    : isInRange
+                      ? 'bg-primary/20 text-foreground'
+                      : isDisabled
+                        ? 'text-muted-foreground/30 cursor-not-allowed'
+                        : 'hover:bg-secondary text-foreground'
                 }
               `}
             >
@@ -222,7 +241,7 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
                     {startDate?.toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
-                      year: 'numeric'
+                      year: 'numeric',
                     })}
                   </div>
                 </div>
@@ -233,7 +252,7 @@ const BookingCalendar: React.FC<BookingCalendarProps> = ({
                       {endDate?.toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
-                        year: 'numeric'
+                        year: 'numeric',
                       })}
                     </div>
                   </div>

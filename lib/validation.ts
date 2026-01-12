@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 // Lead submission validation schema (form fields only)
-// Lead submission validation schema (form fields only)
 export const leadSubmissionSchema = z.object({
   name: z
     .string()
@@ -70,8 +69,8 @@ export const sanitizeInput = (input: string): string => {
   // Remove potentially dangerous characters to prevent XSS
   return input
     .replace(/[<>]/g, '') // Remove angle brackets
-    .replace(/\0/g, '')    // Remove null bytes
-    .trim();               // Trim whitespace
+    .replace(/\0/g, '') // Remove null bytes
+    .trim(); // Trim whitespace
 };
 
 export const sanitizeEmail = (email: string): string => {

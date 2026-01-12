@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api, APIError } from '../lib/api';
 import { QuoteDetails } from './QuoteCalculator';
-import { useModalA11y } from '../lib/useModalA11y';
+import { useModalA11y } from '../hooks/useModalA11y';
 import { safeParseInt, sanitizeInput, sanitizeEmail } from '../lib/validation';
 
 interface EnhancedQuoteModalProps {
