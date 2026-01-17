@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { api, APIError } from '../lib/api';
 import { QuoteDetails } from './QuoteCalculator';
 import { useModalA11y } from '../hooks/useModalA11y';
+import { useTracking } from '../hooks/useAnalytics';
 import { safeParseInt, sanitizeInput, sanitizeEmail } from '../lib/validation';
 
 interface EnhancedQuoteModalProps {
@@ -23,9 +23,30 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
     onClose,
   });
 
+  const { trackFormStarted, trackFormStep, trackFormSubmitted, trackFormSuccess } = useTracking();
+  const [formTracked, setFormTracked] = useState(false);
+
   const [currentStep, setCurrentStep] = useState<Step>('service');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const successTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Track form start when modal opens
+  useEffect(() => {
+    if (open && !formTracked) {
+      trackFormStarted('enhanced_quote_modal');
+      setFormTracked(true);
+    }
+    if (!open) {
+      setFormTracked(false);
+    }
+  }, [open, formTracked, trackFormStarted]);
+
+  // Track step changes
+  useEffect(() => {
+    if (currentStep !== 'service') {
+      trackFormStep('enhanced_quote_modal', currentStep);
+    }
+  }, [currentStep, trackFormStep]);
 
   // Form state
   const [serviceType, setServiceType] = useState(
@@ -45,6 +66,9 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   const [error, setError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [phoneError, setPhoneError] = useState('');
+  
+  // Honeypot field for spam protection (hidden from real users)
+  const [honeypot, setHoneypot] = useState('');
 
   // Sync form state when modal opens or prefilledQuote changes
   useEffect(() => {
@@ -104,6 +128,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
     setAddress('');
     setNotes('');
     setError('');
+    setHoneypot('');
   };
 
   // Validation helpers
@@ -159,22 +184,41 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
     setIsSubmitting(true);
 
     try {
-      // Sanitize inputs before submission
-      const sanitizedName = sanitizeInput(name);
-      const sanitizedEmail = email ? sanitizeEmail(email) : undefined;
-      const sanitizedNotes = `Event: ${eventType}, Attendees: ${attendees}, Units: ${units}, Duration: ${duration} days, Start: ${startDate}, Address: ${sanitizeInput(address)}, Company: ${sanitizeInput(company)}, Notes: ${sanitizeInput(notes)}`;
-
-      await api.leads.create({
-        name: sanitizedName,
-        email: sanitizedEmail,
-        phone,
-        service_type: serviceType,
-        notes: sanitizedNotes,
-        source: 'enhanced_quote_modal',
-        status: 'new',
-        is_emergency: false,
+      // Submit to serverless function with email notification
+      const response = await fetch('/api/quote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: sanitizeInput(name),
+          email: email ? sanitizeEmail(email) : '',
+          phone,
+          company: sanitizeInput(company),
+          address: sanitizeInput(address),
+          serviceType,
+          units,
+          duration,
+          startDate,
+          eventType,
+          attendees,
+          notes: sanitizeInput(notes),
+          // Honeypot field (spam bots might fill this)
+          website_url: honeypot,
+        }),
       });
 
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit quote request');
+      }
+
+      // Track form submission success
+      trackFormSubmitted('enhanced_quote_modal');
+      trackFormSuccess('enhanced_quote_modal');
+
+      // Success - show confirmation step
       setCurrentStep('success');
       successTimeoutRef.current = setTimeout(() => {
         handleClose();
@@ -183,7 +227,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
       console.error('Quote submission error:', err);
 
       // Handle specific API errors
-      if (err instanceof APIError) {
+      if (err instanceof Error) {
         setError(err.message);
       } else {
         setError('Something went wrong. Please try again or call us directly at (555) 123-4567.');
@@ -486,6 +530,20 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
           {error}
         </div>
       )}
+
+      {/* Honeypot field for spam protection - hidden from real users */}
+      <div className="sr-only" aria-hidden="true">
+        <label htmlFor="website_url">Website</label>
+        <input
+          type="text"
+          id="website_url"
+          name="website_url"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
 
       <div className="flex gap-3 pt-4">
         <button
