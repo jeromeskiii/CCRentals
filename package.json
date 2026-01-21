@@ -1,54 +1,28 @@
 {
-  "name": "coastal-clean-rentals-|-portable-toilets-&-site-services",
-  "private": true,
-  "version": "0.0.0",
+  "name": "blink-cli",
+  "version": "1.0.0",
+  "description": "Agent-ready AI coding assistant with session management",
   "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "blink": "./bin/blink.js"
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage",
-    "test:run": "vitest run",
-    "lint": "eslint .",
-    "format": "prettier --write ."
+    "start": "node bin/blink.js"
   },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.89.0",
-    "framer-motion": "^12.23.26",
-    "gsap": "^3.14.2",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "zod": "^4.3.5"
+  "keywords": [
+    "ai",
+    "cli",
+    "assistant",
+    "agent",
+    "coding",
+    "llm"
+  ],
+  "author": "Blink Contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
   },
-  "devDependencies": {
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.1.0",
-    "@testing-library/user-event": "^14.5.2",
-    "@types/node": "^22.14.0",
-    "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.52.0",
-    "@typescript-eslint/parser": "^8.52.0",
-    "@vercel/node": "^5.5.17",
-    "@vitejs/plugin-react": "^5.0.0",
-    "@vitest/coverage-v8": "^2.1.8",
-    "@vitest/ui": "^2.1.8",
-    "autoprefixer": "^10.4.23",
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.4",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "jsdom": "^25.0.1",
-    "postcss": "^8.5.6",
-    "prettier": "^3.7.4",
-    "tailwindcss": "^3.4.19",
-    "tailwindcss-animate": "^1.0.7",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0",
-    "vitest": "^2.1.8"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }
