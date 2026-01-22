@@ -2,7 +2,7 @@
  * useAnalytics Hook - React hook for tracking events in components
  */
 
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { analytics, analyticsEvents, type AnalyticsEvent } from '../lib/analytics';
 
 /**
@@ -40,26 +40,58 @@ export function useVisibleTracking(
   eventName: AnalyticsEvent,
   once: boolean = true
 ): (node: Element | null) => void {
+  const observerRef = React.useRef<IntersectionObserver | null>(null);
+  const currentNodeRef = React.useRef<Element | null>(null);
+
+  useEffect(() => {
+    return () => {
+      // Cleanup: disconnect observer and clear refs when component unmounts
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+      currentNodeRef.current = null;
+    };
+  }, []);
+
   return useCallback((node: Element | null) => {
-    if (!node) return;
+    // If node becomes null, disconnect observer
+    if (!node) {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+      currentNodeRef.current = null;
+      return;
+    }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            analytics.track(eventName);
-            if (once) {
-              observer.unobserve(node);
+    // If we already have a different node, disconnect the old observer
+    if (currentNodeRef.current && currentNodeRef.current !== node) {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    }
+
+    currentNodeRef.current = node;
+
+    // Create new observer if none exists
+    if (!observerRef.current) {
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              analytics.track(eventName);
+              if (once && observerRef.current) {
+                observerRef.current.unobserve(node);
+              }
             }
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
+          });
+        },
+        { threshold: 0.5 }
+      );
+    }
 
-    observer.observe(node);
-
-    return () => observer.disconnect();
+    observerRef.current.observe(node);
   }, [eventName, once]);
 }
 
@@ -70,15 +102,48 @@ export function useClickTracking<T extends HTMLElement>(
   eventName: AnalyticsEvent,
   props?: Record<string, unknown>
 ): (node: T | null) => void {
-  return useCallback((node: T | null) => {
-    if (!node) return;
+  const currentNodeRef = React.useRef<T | null>(null);
+  const handlerRef = React.useRef<((e: Event) => void) | null>(null);
 
-    const handler = () => {
-      analytics.track(eventName, props);
+  useEffect(() => {
+    return () => {
+      // Cleanup: remove event listener and clear refs when component unmounts
+      if (currentNodeRef.current && handlerRef.current) {
+        currentNodeRef.current.removeEventListener('click', handlerRef.current);
+      }
+      currentNodeRef.current = null;
+      handlerRef.current = null;
     };
+  }, []);
 
-    node.addEventListener('click', handler);
-    return () => node.removeEventListener('click', handler);
+  return useCallback((node: T | null) => {
+    // If node becomes null, remove listener
+    if (!node) {
+      if (currentNodeRef.current && handlerRef.current) {
+        currentNodeRef.current.removeEventListener('click', handlerRef.current);
+      }
+      currentNodeRef.current = null;
+      handlerRef.current = null;
+      return;
+    }
+
+    // If we already have a different node, remove the old listener
+    if (currentNodeRef.current && currentNodeRef.current !== node) {
+      if (handlerRef.current) {
+        currentNodeRef.current.removeEventListener('click', handlerRef.current);
+      }
+    }
+
+    currentNodeRef.current = node;
+
+    // Create handler if none exists
+    if (!handlerRef.current) {
+      handlerRef.current = () => {
+        analytics.track(eventName, props);
+      };
+    }
+
+    node.addEventListener('click', handlerRef.current);
   }, [eventName, props]);
 }
 
