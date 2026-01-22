@@ -325,7 +325,7 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
                   {/* Honeypot field for bot detection */}
                   <input
                     type="text"
-                    name="website"
+                    name="website_url"
                     value={honeypot}
                     onChange={(e) => setHoneypot(e.target.value)}
                     className="hidden"

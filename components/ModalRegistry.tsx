@@ -65,7 +65,7 @@ export const ModalRegistry: FC = () => {
 
         // Build props for the modal component
         const componentProps: Record<string, any> = {
-          open: true,
+          isOpen: true,
           onClose: () => closeModal(modalId),
         };
 

@@ -1,6 +1,18 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
 
+// HTML escape helper function
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  };
+  return text.replace(/[&<>"']/g, (char) => map[char]);
+}
+
 // Rate limiting store (in-memory, resets on cold start)
 // For production, use Upstash Redis: https://upstash.com/docs/redis/features/ratelimit
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
@@ -44,7 +56,7 @@ async function sendQuoteEmail(data: QuoteEmailData): Promise<{ success: boolean;
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>New Quote Request - ${data.serviceType}</title>
+      <title>New Quote Request - ${escapeHtml(data.serviceType)}</title>
     </head>
     <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
       <div style="background: linear-gradient(135deg, #0066cc 0%, #004499 100%); color: white; padding: 24px; border-radius: 12px 12px 0 0;">
@@ -56,32 +68,32 @@ async function sendQuoteEmail(data: QuoteEmailData): Promise<{ success: boolean;
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef; font-weight: 600; width: 140px;">Service:</td>
-            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${data.serviceType}</td>
+            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.serviceType)}</td>
           </tr>
           <tr>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Units:</td>
-            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${data.units}</td>
+            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.units.toString())}</td>
           </tr>
           <tr>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Duration:</td>
-            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${data.duration} days</td>
+            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.duration.toString())} days</td>
           </tr>
           ${data.startDate ? `
           <tr>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Start Date:</td>
-            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${data.startDate}</td>
+            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.startDate)}</td>
           </tr>
           ` : ''}
           ${data.eventType ? `
           <tr>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Event Type:</td>
-            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${data.eventType}</td>
+            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.eventType)}</td>
           </tr>
           ` : ''}
           ${data.attendees ? `
           <tr>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Attendees:</td>
-            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${data.attendees}</td>
+            <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.attendees.toString())}</td>
           </tr>
           ` : ''}
         </table>
@@ -90,35 +102,35 @@ async function sendQuoteEmail(data: QuoteEmailData): Promise<{ success: boolean;
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef; font-weight: 600; width: 140px;">Name:</td>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">${data.name}</td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.name)}</td>
           </tr>
           <tr>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Phone:</td>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;"><a href="tel:${data.phone}" style="color: #0066cc; text-decoration: none;">${data.phone}</a></td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;"><a href="tel:${escapeHtml(data.phone)}" style="color: #0066cc; text-decoration: none;">${escapeHtml(data.phone)}</a></td>
           </tr>
           ${data.email ? `
           <tr>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Email:</td>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;"><a href="mailto:${data.email}" style="color: #0066cc; text-decoration: none;">${data.email}</a></td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;"><a href="mailto:${escapeHtml(data.email)}" style="color: #0066cc; text-decoration: none;">${escapeHtml(data.email)}</a></td>
           </tr>
           ` : ''}
           ${data.company ? `
           <tr>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Company:</td>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">${data.company}</td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.company)}</td>
           </tr>
           ` : ''}
           ${data.address ? `
           <tr>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef; font-weight: 600; vertical-align: top;">Address:</td>
-            <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">${data.address}</td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.address)}</td>
           </tr>
           ` : ''}
         </table>
 
         ${data.notes ? `
         <h3 style="margin: 24px 0 12px 0; font-size: 16px; color: #0066cc;">Additional Notes</h3>
-        <p style="background: #fff; padding: 16px; border-radius: 8px; border: 1px solid #e9ecef; margin: 0;">${data.notes}</p>
+        <p style="background: #fff; padding: 16px; border-radius: 8px; border: 1px solid #e9ecef; margin: 0;">${escapeHtml(data.notes)}</p>
         ` : ''}
 
         <div style="margin-top: 24px; padding: 16px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
@@ -145,7 +157,7 @@ async function sendQuoteEmail(data: QuoteEmailData): Promise<{ success: boolean;
       body: JSON.stringify({
         from: 'Coastal Clean Rentals <quotes@coastalcleanrentals.com>',
         to: [BUSINESS_EMAIL],
-        subject: `New Quote Request - ${data.serviceType} (${data.units} unit${data.units > 1 ? 's' : ''}) - ${data.name}`,
+        subject: `New Quote Request - ${escapeHtml(data.serviceType)} (${escapeHtml(data.units.toString())} unit${data.units > 1 ? 's' : ''}) - ${escapeHtml(data.name)}`,
         html: htmlContent,
         reply_to: data.email || undefined,
       }),

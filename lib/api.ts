@@ -27,7 +27,7 @@ export const api = {
    */
   leads: {
     /**
-     * Create a new lead submission with validation and sanitization
+     * Create a new lead submission via server-side endpoint with rate limiting and bot protection
      */
     create: async (data: LeadSubmission) => {
       // Validate input data structure
@@ -37,14 +37,23 @@ export const api = {
         throw new APIError(firstError.message, 'VALIDATION_ERROR', 400, validation.error.issues);
       }
 
-      // Submit to database (Zod schema already handles normalization via transforms)
-      const { error } = await supabase.from('leads').insert([validation.data]).select();
+      // Submit to server-side endpoint instead of direct database insert
+      // This ensures rate limiting, bot protection, and RLS policies are enforced
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(validation.data),
+      });
 
-      if (error) {
-        console.error('API Error creating lead:', error);
+      const responseData = await response.json();
 
-        // Provide specific error messages based on error type
-        if (error.code === '23505') {
+      if (!response.ok) {
+        console.error('API Error creating lead:', responseData);
+
+        // Handle specific error codes from server
+        if (response.status === 409) {
           throw new APIError(
             'A lead with this information already exists.',
             'DUPLICATE_ENTRY',
@@ -52,7 +61,15 @@ export const api = {
           );
         }
 
-        if (error.code === '42501') {
+        if (response.status === 429) {
+          throw new APIError(
+            responseData.error || 'Too many requests. Please try again later.',
+            'RATE_LIMITED',
+            429
+          );
+        }
+
+        if (response.status === 403) {
           throw new APIError(
             'Permission denied. Please contact support.',
             'PERMISSION_DENIED',
@@ -60,20 +77,21 @@ export const api = {
           );
         }
 
-        if (error.message.includes('network')) {
+        if (response.status === 400) {
           throw new APIError(
-            'Network error. Please check your connection and try again.',
-            'NETWORK_ERROR',
-            0
+            'Validation failed',
+            'VALIDATION_ERROR',
+            400,
+            responseData.details
           );
         }
 
         // Generic error as fallback
         throw new APIError(
-          'Unable to submit your request. Please try again or contact support.',
+          responseData.error || 'Unable to submit your request. Please try again or contact support.',
           'SUBMISSION_ERROR',
-          500,
-          error
+          response.status,
+          responseData
         );
       }
 
