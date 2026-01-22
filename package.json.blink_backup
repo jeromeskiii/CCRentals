@@ -1,0 +1,28 @@
+{
+  "name": "blink-cli",
+  "version": "1.0.0",
+  "description": "Agent-ready AI coding assistant with session management",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "blink": "./bin/blink.js"
+  },
+  "scripts": {
+    "start": "node bin/blink.js"
+  },
+  "keywords": [
+    "ai",
+    "cli",
+    "assistant",
+    "agent",
+    "coding",
+    "llm"
+  ],
+  "author": "Blink Contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
