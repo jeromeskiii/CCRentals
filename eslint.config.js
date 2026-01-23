@@ -123,4 +123,25 @@ export default [
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
+  // Node.js source files (src/ directory)
+  {
+    files: ['src/**/*.js', 'bin/**/*.js'],
+    languageOptions: {
+      sourceType: 'module',
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        fetch: 'readonly',
+        URL: 'readonly',
+        TextEncoder: 'readonly',
+        TextDecoder: 'readonly',
+      },
+    },
+    rules: {
+      'no-undef': 'off',
+    },
+  },
 ];

@@ -54,45 +54,48 @@ export function useVisibleTracking(
     };
   }, []);
 
-  return useCallback((node: Element | null) => {
-    // If node becomes null, disconnect observer
-    if (!node) {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-        observerRef.current = null;
+  return useCallback(
+    (node: Element | null) => {
+      // If node becomes null, disconnect observer
+      if (!node) {
+        if (observerRef.current) {
+          observerRef.current.disconnect();
+          observerRef.current = null;
+        }
+        currentNodeRef.current = null;
+        return;
       }
-      currentNodeRef.current = null;
-      return;
-    }
 
-    // If we already have a different node, disconnect the old observer
-    if (currentNodeRef.current && currentNodeRef.current !== node) {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
+      // If we already have a different node, disconnect the old observer
+      if (currentNodeRef.current && currentNodeRef.current !== node) {
+        if (observerRef.current) {
+          observerRef.current.disconnect();
+        }
       }
-    }
 
-    currentNodeRef.current = node;
+      currentNodeRef.current = node;
 
-    // Create new observer if none exists
-    if (!observerRef.current) {
-      observerRef.current = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              analytics.track(eventName);
-              if (once && observerRef.current) {
-                observerRef.current.unobserve(node);
+      // Create new observer if none exists
+      if (!observerRef.current) {
+        observerRef.current = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                analytics.track(eventName);
+                if (once && observerRef.current) {
+                  observerRef.current.unobserve(node);
+                }
               }
-            }
-          });
-        },
-        { threshold: 0.5 }
-      );
-    }
+            });
+          },
+          { threshold: 0.5 }
+        );
+      }
 
-    observerRef.current.observe(node);
-  }, [eventName, once]);
+      observerRef.current.observe(node);
+    },
+    [eventName, once]
+  );
 }
 
 /**
@@ -116,35 +119,38 @@ export function useClickTracking<T extends HTMLElement>(
     };
   }, []);
 
-  return useCallback((node: T | null) => {
-    // If node becomes null, remove listener
-    if (!node) {
-      if (currentNodeRef.current && handlerRef.current) {
-        currentNodeRef.current.removeEventListener('click', handlerRef.current);
+  return useCallback(
+    (node: T | null) => {
+      // If node becomes null, remove listener
+      if (!node) {
+        if (currentNodeRef.current && handlerRef.current) {
+          currentNodeRef.current.removeEventListener('click', handlerRef.current);
+        }
+        currentNodeRef.current = null;
+        handlerRef.current = null;
+        return;
       }
-      currentNodeRef.current = null;
-      handlerRef.current = null;
-      return;
-    }
 
-    // If we already have a different node, remove the old listener
-    if (currentNodeRef.current && currentNodeRef.current !== node) {
-      if (handlerRef.current) {
-        currentNodeRef.current.removeEventListener('click', handlerRef.current);
+      // If we already have a different node, remove the old listener
+      if (currentNodeRef.current && currentNodeRef.current !== node) {
+        if (handlerRef.current) {
+          currentNodeRef.current.removeEventListener('click', handlerRef.current);
+        }
       }
-    }
 
-    currentNodeRef.current = node;
+      currentNodeRef.current = node;
 
-    // Create handler if none exists
-    if (!handlerRef.current) {
-      handlerRef.current = () => {
-        analytics.track(eventName, props);
-      };
-    }
+      // Create handler if none exists
+      if (!handlerRef.current) {
+        handlerRef.current = () => {
+          analytics.track(eventName, props);
+        };
+      }
 
-    node.addEventListener('click', handlerRef.current);
-  }, [eventName, props]);
+      node.addEventListener('click', handlerRef.current);
+    },
+    [eventName, props]
+  );
 }
 
 /**
@@ -156,31 +162,37 @@ export function useTracking() {
   return {
     // Generic tracking
     track,
-    
+
     // Predefined events
-    trackQuoteClick: (source?: string) => 
-      trackEvent(analyticsEvents.quoteClicked, { source }),
-    trackGetQuoteClick: (location?: string) => 
+    trackQuoteClick: (source?: string) => trackEvent(analyticsEvents.quoteClicked, { source }),
+    trackGetQuoteClick: (location?: string) =>
       trackEvent(analyticsEvents.getQuoteClick, { location }),
-    trackPhoneClick: (phoneNumber?: string) => 
+    trackPhoneClick: (phoneNumber?: string) =>
       trackEvent(analyticsEvents.phoneClicked, { phone: phoneNumber }),
-    trackEmailClick: (email?: string) => 
-      trackEvent(analyticsEvents.emailClicked, { email }),
-    trackFormStarted: (formName: string) => 
+    trackEmailClick: (email?: string) => trackEvent(analyticsEvents.emailClicked, { email }),
+    trackFormStarted: (formName: string) =>
       trackEvent(analyticsEvents.formStarted, { form: formName }),
-    trackFormStep: (formName: string, step: string) => 
+    trackFormStep: (formName: string, step: string) =>
       trackEvent(analyticsEvents.formStepCompleted, { form: formName, step }),
-    trackFormSubmitted: (formName: string) => 
+    trackFormSubmitted: (formName: string) =>
       trackEvent(analyticsEvents.formSubmitted, { form: formName }),
-    trackFormSuccess: (formName: string) => 
+    trackFormSuccess: (formName: string) =>
       trackEvent(analyticsEvents.formSuccess, { form: formName }),
-    trackServiceViewed: (serviceId: string, serviceName: string) => 
-      trackEvent(analyticsEvents.serviceViewed, { service_id: serviceId, service_name: serviceName }),
-    trackServiceClicked: (serviceId: string, serviceName: string) => 
-      trackEvent(analyticsEvents.serviceClicked, { service_id: serviceId, service_name: serviceName }),
-    trackZipCodeCheck: (zipCode: string, served: boolean) => 
-      trackEvent(served ? analyticsEvents.zipCodeServed : analyticsEvents.zipCodeNotServed, { zip_code: zipCode }),
-    
+    trackServiceViewed: (serviceId: string, serviceName: string) =>
+      trackEvent(analyticsEvents.serviceViewed, {
+        service_id: serviceId,
+        service_name: serviceName,
+      }),
+    trackServiceClicked: (serviceId: string, serviceName: string) =>
+      trackEvent(analyticsEvents.serviceClicked, {
+        service_id: serviceId,
+        service_name: serviceName,
+      }),
+    trackZipCodeCheck: (zipCode: string, served: boolean) =>
+      trackEvent(served ? analyticsEvents.zipCodeServed : analyticsEvents.zipCodeNotServed, {
+        zip_code: zipCode,
+      }),
+
     // Utility
     flush,
   };

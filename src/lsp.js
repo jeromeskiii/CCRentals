@@ -1,11 +1,11 @@
 const LSP_LANGUAGE_SERVERS = {
-  javascript: { name: "typescript-language-server", command: "typescript-language-server" },
-  typescript: { name: "typescript-language-server", command: "typescript-language-server" },
-  python: { name: "pylsp", command: "pylsp" },
-  go: { name: "gopls", command: "gopls" },
-  rust: { name: "rust-analyzer", command: "rust-analyzer" },
-  cpp: { name: "clangd", command: "clangd" },
-  c: { name: "clangd", command: "clangd" }
+  javascript: { name: 'typescript-language-server', command: 'typescript-language-server' },
+  typescript: { name: 'typescript-language-server', command: 'typescript-language-server' },
+  python: { name: 'pylsp', command: 'pylsp' },
+  go: { name: 'gopls', command: 'gopls' },
+  rust: { name: 'rust-analyzer', command: 'rust-analyzer' },
+  cpp: { name: 'clangd', command: 'clangd' },
+  c: { name: 'clangd', command: 'clangd' },
 };
 
 class LSPManager {
@@ -20,7 +20,7 @@ class LSPManager {
       availableLanguages: Object.keys(LSP_LANGUAGE_SERVERS),
       serverCount: Object.keys(LSP_LANGUAGE_SERVERS).length,
       caps: this.caps,
-      fallbackAvailable: true
+      fallbackAvailable: true,
     };
   }
 

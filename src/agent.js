@@ -1,7 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
-import { execSync } from "node:child_process";
-import { createPatch } from "./patch.js";
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
+import { createPatch } from './patch.js';
 
 const MAX_ITERATIONS = 10;
 const AGENT_SYSTEM_PROMPT = `You are a coding assistant with file system access.
@@ -51,22 +51,20 @@ function executeTool(toolCall, sessionId) {
 
   try {
     switch (tool) {
-      case "read_file": {
+      case 'read_file': {
         const filePath = path.resolve(params.path);
         if (!fs.existsSync(filePath)) {
           return { success: false, error: `File not found: ${params.path}` };
         }
-        const content = fs.readFileSync(filePath, "utf8");
+        const content = fs.readFileSync(filePath, 'utf8');
         return { success: true, content, path: params.path };
       }
 
-      case "write_file": {
+      case 'write_file': {
         const filePath = path.resolve(params.path);
-        const oldContent = fs.existsSync(filePath) 
-          ? fs.readFileSync(filePath, "utf8") 
-          : "";
-        
-        fs.writeFileSync(filePath, params.content, "utf8");
+        const oldContent = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+
+        fs.writeFileSync(filePath, params.content, 'utf8');
 
         // Create patch if we have a session
         let patchInfo = null;
@@ -77,52 +75,52 @@ function executeTool(toolCall, sessionId) {
               filePath,
               oldContent,
               newContent: params.content,
-              mode: "applied",
-              rationale: params.rationale || "Agent modification",
-              model: "agent"
+              mode: 'applied',
+              rationale: params.rationale || 'Agent modification',
+              model: 'agent',
             });
           } catch (e) {
             // Patch creation failed, but file was written
           }
         }
 
-        return { 
-          success: true, 
+        return {
+          success: true,
           path: params.path,
-          patch: patchInfo ? patchInfo.patchId : null
+          patch: patchInfo ? patchInfo.patchId : null,
         };
       }
 
-      case "list_files": {
-        const dirPath = path.resolve(params.dir || ".");
+      case 'list_files': {
+        const dirPath = path.resolve(params.dir || '.');
         if (!fs.existsSync(dirPath)) {
           return { success: false, error: `Directory not found: ${params.dir}` };
         }
         const files = fs.readdirSync(dirPath);
-        return { success: true, files, dir: params.dir || "." };
+        return { success: true, files, dir: params.dir || '.' };
       }
 
-      case "run_command": {
+      case 'run_command': {
         const output = execSync(params.cmd, {
-          encoding: "utf8",
+          encoding: 'utf8',
           cwd: process.cwd(),
-          timeout: 10000
+          timeout: 10000,
         });
         return { success: true, output, cmd: params.cmd };
       }
 
-      case "create_patch": {
+      case 'create_patch': {
         if (!sessionId) {
-          return { success: false, error: "No active session for patches" };
+          return { success: false, error: 'No active session for patches' };
         }
         const patchInfo = createPatch({
           sessionId,
           filePath: params.path,
           oldContent: params.old_content,
           newContent: params.new_content,
-          mode: "preview",
-          rationale: params.rationale || "",
-          model: "agent"
+          mode: 'preview',
+          rationale: params.rationale || '',
+          model: 'agent',
         });
         return { success: true, ...patchInfo };
       }
@@ -131,18 +129,18 @@ function executeTool(toolCall, sessionId) {
         return { success: false, error: `Unknown tool: ${tool}` };
     }
   } catch (error) {
-    return { 
-      success: false, 
+    return {
+      success: false,
       error: error.message,
-      tool
+      tool,
     };
   }
 }
 
 export async function runAgent(task, session, model) {
   const messages = [
-    { role: "system", content: AGENT_SYSTEM_PROMPT },
-    { role: "user", content: task }
+    { role: 'system', content: AGENT_SYSTEM_PROMPT },
+    { role: 'user', content: task },
   ];
 
   const toolResults = [];
@@ -152,20 +150,20 @@ export async function runAgent(task, session, model) {
     iteration++;
 
     // Build prompt with tool results
-    let promptParts = messages.map(m => `${m.role}: ${m.content}`);
-    
+    let promptParts = messages.map((m) => `${m.role}: ${m.content}`);
+
     if (toolResults.length > 0) {
       const resultsText = toolResults
-        .map(r => `Tool: ${r.tool}\nResult: ${JSON.stringify(r.result, null, 2)}`)
-        .join("\n\n");
+        .map((r) => `Tool: ${r.tool}\nResult: ${JSON.stringify(r.result, null, 2)}`)
+        .join('\n\n');
       promptParts.push(`Tool Results:\n${resultsText}`);
     }
 
-    const prompt = promptParts.join("\n\n");
+    const prompt = promptParts.join('\n\n');
 
     // Get model response
     const stream = model.complete({ prompt });
-    let response = "";
+    let response = '';
     for await (const chunk of stream) {
       response += chunk;
     }
@@ -184,29 +182,47 @@ export async function runAgent(task, session, model) {
       toolResults.push({
         tool: toolCall.tool,
         params: toolCall,
-        result
+        result,
       });
     }
 
     // Add response to messages
-    messages.push({ role: "assistant", content: response });
+    messages.push({ role: 'assistant', content: response });
   }
 
-  return "Agent reached maximum iterations. Task may be incomplete.";
+  return 'Agent reached maximum iterations. Task may be incomplete.';
 }
 
 export function isAgentTask(prompt) {
   const lowerPrompt = prompt.toLowerCase();
-  
+
   const agentKeywords = [
-    "add", "create", "fix", "refactor", "implement", 
-    "change", "update", "delete", "remove", "write", 
-    "generate", "modify", "edit", "build"
+    'add',
+    'create',
+    'fix',
+    'refactor',
+    'implement',
+    'change',
+    'update',
+    'delete',
+    'remove',
+    'write',
+    'generate',
+    'modify',
+    'edit',
+    'build',
   ];
 
   const codeKeywords = [
-    "class", "function", "api", "test", "code", 
-    "file", "component", "module", "method"
+    'class',
+    'function',
+    'api',
+    'test',
+    'code',
+    'file',
+    'component',
+    'module',
+    'method',
   ];
 
   // Check for explicit agent prefix
@@ -220,10 +236,10 @@ export function isAgentTask(prompt) {
   }
 
   // Check for agent keywords + code keywords
-  const hasAgentKeyword = agentKeywords.some(kw => 
+  const hasAgentKeyword = agentKeywords.some((kw) =>
     new RegExp(`\\b${kw}\\b`, 'i').test(lowerPrompt)
   );
-  const hasCodeKeyword = codeKeywords.some(kw => 
+  const hasCodeKeyword = codeKeywords.some((kw) =>
     new RegExp(`\\b${kw}\\b`, 'i').test(lowerPrompt)
   );
 

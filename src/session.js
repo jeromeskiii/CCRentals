@@ -1,15 +1,15 @@
-import crypto from "node:crypto";
-import fs from "node:fs";
-import path from "node:path";
-import { attachRepoToSession } from "./index.js";
-import { createLSPManager } from "./lsp.js";
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import { attachRepoToSession } from './index.js';
+import { createLSPManager } from './lsp.js';
 
-const BLINK_DIR = ".blink";
-const SESSIONS_DIR = path.join(BLINK_DIR, "sessions");
+const BLINK_DIR = '.blink';
+const SESSIONS_DIR = path.join(BLINK_DIR, 'sessions');
 
 function generateSessionId() {
   const timestamp = Date.now().toString(36);
-  const random = crypto.randomBytes(4).toString("hex");
+  const random = crypto.randomBytes(4).toString('hex');
   return `${timestamp}-${random}`;
 }
 
@@ -20,9 +20,9 @@ function ensureBlinkStructure(sessionId) {
     BLINK_DIR,
     SESSIONS_DIR,
     sessionPath,
-    path.join(sessionPath, "index"),
-    path.join(sessionPath, "patches"),
-    path.join(sessionPath, "logs")
+    path.join(sessionPath, 'index'),
+    path.join(sessionPath, 'patches'),
+    path.join(sessionPath, 'logs'),
   ];
 
   for (const dir of dirs) {
@@ -31,61 +31,61 @@ function ensureBlinkStructure(sessionId) {
     }
   }
 
-  const counterPath = path.join(sessionPath, "patches", ".counter");
+  const counterPath = path.join(sessionPath, 'patches', '.counter');
   if (!fs.existsSync(counterPath)) {
-    fs.writeFileSync(counterPath, "0", "utf8");
+    fs.writeFileSync(counterPath, '0', 'utf8');
   }
 
   return {
     sessionPath,
-    transcriptPath: path.join(sessionPath, "transcript.ndjson"),
-    seedPath: path.join(sessionPath, "seed.json"),
-    metaPath: path.join(sessionPath, "meta.json"),
-    repoManifestPath: path.join(sessionPath, "repo_manifest.json"),
-    promptLogPath: path.join(sessionPath, "logs", "prompts.ndjson"),
-    patchesDir: path.join(sessionPath, "patches"),
-    counterPath
+    transcriptPath: path.join(sessionPath, 'transcript.ndjson'),
+    seedPath: path.join(sessionPath, 'seed.json'),
+    metaPath: path.join(sessionPath, 'meta.json'),
+    repoManifestPath: path.join(sessionPath, 'repo_manifest.json'),
+    promptLogPath: path.join(sessionPath, 'logs', 'prompts.ndjson'),
+    patchesDir: path.join(sessionPath, 'patches'),
+    counterPath,
   };
 }
 
 function createMeta(modelId) {
   return {
-    schema_version: "1.0",
+    schema_version: '1.0',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     model_id: modelId,
-    blink_version: "0.1.0"
+    blink_version: '0.1.0',
   };
 }
 
 function generateSeed({ initialPrompt, modelId }) {
   const sessionDate = new Date();
   const dateStr = sessionDate.toISOString().slice(0, 10);
-  const timeStr = sessionDate.toTimeString().slice(0, 8).replace(/:/g, "-");
+  const timeStr = sessionDate.toTimeString().slice(0, 8).replace(/:/g, '-');
 
   return {
     session_id: `${dateStr}T${timeStr}-blink`,
-    origin: "stateless",
-    user_goal: initialPrompt || "",
+    origin: 'stateless',
+    user_goal: initialPrompt || '',
     decisions_locked: [
-      "Blink is stateless by default",
-      "Ctrl-S escalates into a file-backed session",
-      "Indexing must be tiered and fast-first",
-      "All edits are patch-first with receipts"
+      'Blink is stateless by default',
+      'Ctrl-S escalates into a file-backed session',
+      'Indexing must be tiered and fast-first',
+      'All edits are patch-first with receipts',
     ],
     open_questions: [],
     prompt_policy: {
-      pin: ["decisions_locked", "repo_manifest"],
+      pin: ['decisions_locked', 'repo_manifest'],
       tail_turns: 6,
-      never_auto_include: ["full_transcript"]
-    }
+      never_auto_include: ['full_transcript'],
+    },
   };
 }
 
 function writeJson(filePath, data) {
   try {
     const jsonContent = JSON.stringify(data, null, 2);
-    fs.writeFileSync(filePath, jsonContent, "utf8");
+    fs.writeFileSync(filePath, jsonContent, 'utf8');
   } catch (error) {
     throw new Error(`Failed to write JSON to ${filePath}: ${error.message}`);
   }
@@ -93,7 +93,7 @@ function writeJson(filePath, data) {
 
 function readJson(filePath) {
   try {
-    const content = fs.readFileSync(filePath, "utf8");
+    const content = fs.readFileSync(filePath, 'utf8');
     return JSON.parse(content);
   } catch (error) {
     if (error instanceof SyntaxError) {
@@ -107,10 +107,10 @@ function appendTranscript(transcriptPath, role, content) {
   const turn = {
     timestamp: new Date().toISOString(),
     role,
-    content
+    content,
   };
   const line = JSON.stringify(turn);
-  fs.appendFileSync(transcriptPath, line + "\n", "utf8");
+  fs.appendFileSync(transcriptPath, line + '\n', 'utf8');
 }
 
 export function createSession({ seed, initialPrompt, modelId, enableLSP = false, lspCaps = {} }) {
@@ -143,7 +143,7 @@ export function createSession({ seed, initialPrompt, modelId, enableLSP = false,
     lspManager = createLSPManager({
       enabled: true,
       sessionDir: paths.sessionPath,
-      caps: lspCaps
+      caps: lspCaps,
     });
     lspCapabilities = lspManager.getCapabilities();
   }
@@ -158,7 +158,7 @@ export function createSession({ seed, initialPrompt, modelId, enableLSP = false,
     repoManifest,
     indexTier: enableLSP ? 2 : 1,
     lspManager,
-    lspCapabilities
+    lspCapabilities,
   };
 }
 
@@ -173,7 +173,7 @@ export function getActiveSession() {
 export function addTranscriptTurn({ transcriptPath, role, content }) {
   appendTranscript(transcriptPath, role, content);
 
-  const metaPath = path.join(path.dirname(transcriptPath), "meta.json");
+  const metaPath = path.join(path.dirname(transcriptPath), 'meta.json');
   if (fs.existsSync(metaPath)) {
     try {
       const meta = readJson(metaPath);
@@ -187,7 +187,7 @@ export function addTranscriptTurn({ transcriptPath, role, content }) {
 
 export function loadSession(sessionId) {
   const sessionPath = path.join(SESSIONS_DIR, sessionId);
-  const metaPath = path.join(sessionPath, "meta.json");
+  const metaPath = path.join(sessionPath, 'meta.json');
 
   if (!fs.existsSync(metaPath)) {
     throw new Error(`Session ${sessionId} not found`);
@@ -197,16 +197,16 @@ export function loadSession(sessionId) {
 
   const paths = {
     sessionPath,
-    transcriptPath: path.join(sessionPath, "transcript.ndjson"),
-    seedPath: path.join(sessionPath, "seed.json"),
+    transcriptPath: path.join(sessionPath, 'transcript.ndjson'),
+    seedPath: path.join(sessionPath, 'seed.json'),
     metaPath,
-    repoManifestPath: path.join(sessionPath, "repo_manifest.json")
+    repoManifestPath: path.join(sessionPath, 'repo_manifest.json'),
   };
 
   return {
     sessionId,
     paths,
-    meta
+    meta,
   };
 }
 
@@ -219,7 +219,7 @@ export function listSessions() {
   const sessions = [];
 
   for (const id of sessionIds) {
-    const metaPath = path.join(SESSIONS_DIR, id, "meta.json");
+    const metaPath = path.join(SESSIONS_DIR, id, 'meta.json');
     if (fs.existsSync(metaPath)) {
       try {
         const meta = readJson(metaPath);

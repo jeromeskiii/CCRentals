@@ -23,7 +23,13 @@ const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour in ms
 // Email schema validation
 const quoteEmailSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100).trim(),
-  email: z.string().email('Invalid email address').toLowerCase().trim().optional().or(z.literal('')),
+  email: z
+    .string()
+    .email('Invalid email address')
+    .toLowerCase()
+    .trim()
+    .optional()
+    .or(z.literal('')),
   phone: z.string().min(10, 'Phone must be at least 10 digits').max(20),
   company: z.string().max(100).trim().optional().or(z.literal('')),
   address: z.string().max(500).trim().optional().or(z.literal('')),
@@ -44,7 +50,7 @@ type QuoteEmailData = z.infer<typeof quoteEmailSchema>;
 async function sendQuoteEmail(data: QuoteEmailData): Promise<{ success: boolean; error?: string }> {
   const resendApiKey = process.env.RESEND_API_KEY;
   const BUSINESS_EMAIL = process.env.BUSINESS_EMAIL || 'info@coastalcleanrentals.com';
-  
+
   if (!resendApiKey) {
     console.error('RESEND_API_KEY not configured');
     return { success: false, error: 'Email service not configured' };
@@ -78,24 +84,36 @@ async function sendQuoteEmail(data: QuoteEmailData): Promise<{ success: boolean;
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Duration:</td>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.duration.toString())} days</td>
           </tr>
-          ${data.startDate ? `
+          ${
+            data.startDate
+              ? `
           <tr>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Start Date:</td>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.startDate)}</td>
           </tr>
-          ` : ''}
-          ${data.eventType ? `
+          `
+              : ''
+          }
+          ${
+            data.eventType
+              ? `
           <tr>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Event Type:</td>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.eventType)}</td>
           </tr>
-          ` : ''}
-          ${data.attendees ? `
+          `
+              : ''
+          }
+          ${
+            data.attendees
+              ? `
           <tr>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Attendees:</td>
             <td style="padding: 12px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.attendees.toString())}</td>
           </tr>
-          ` : ''}
+          `
+              : ''
+          }
         </table>
 
         <h3 style="margin: 24px 0 12px 0; font-size: 16px; color: #0066cc;">Contact Information</h3>
@@ -108,30 +126,46 @@ async function sendQuoteEmail(data: QuoteEmailData): Promise<{ success: boolean;
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Phone:</td>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;"><a href="tel:${escapeHtml(data.phone)}" style="color: #0066cc; text-decoration: none;">${escapeHtml(data.phone)}</a></td>
           </tr>
-          ${data.email ? `
+          ${
+            data.email
+              ? `
           <tr>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Email:</td>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;"><a href="mailto:${escapeHtml(data.email)}" style="color: #0066cc; text-decoration: none;">${escapeHtml(data.email)}</a></td>
           </tr>
-          ` : ''}
-          ${data.company ? `
+          `
+              : ''
+          }
+          ${
+            data.company
+              ? `
           <tr>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef; font-weight: 600;">Company:</td>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.company)}</td>
           </tr>
-          ` : ''}
-          ${data.address ? `
+          `
+              : ''
+          }
+          ${
+            data.address
+              ? `
           <tr>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef; font-weight: 600; vertical-align: top;">Address:</td>
             <td style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">${escapeHtml(data.address)}</td>
           </tr>
-          ` : ''}
+          `
+              : ''
+          }
         </table>
 
-        ${data.notes ? `
+        ${
+          data.notes
+            ? `
         <h3 style="margin: 24px 0 12px 0; font-size: 16px; color: #0066cc;">Additional Notes</h3>
         <p style="background: #fff; padding: 16px; border-radius: 8px; border: 1px solid #e9ecef; margin: 0;">${escapeHtml(data.notes)}</p>
-        ` : ''}
+        `
+            : ''
+        }
 
         <div style="margin-top: 24px; padding: 16px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
           <strong style="color: #1565c0;">Action Required:</strong>
@@ -152,7 +186,7 @@ async function sendQuoteEmail(data: QuoteEmailData): Promise<{ success: boolean;
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${resendApiKey}`,
+        Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
         from: 'Coastal Clean Rentals <quotes@coastalcleanrentals.com>',
@@ -224,20 +258,21 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 
   // Rate limiting by IP
-  const clientIP = request.headers['x-forwarded-for']?.toString().split(',')[0].trim() || 
-                   request.headers['x-vercel-forwarded-for']?.toString() || 
-                   'unknown';
-  
+  const clientIP =
+    request.headers['x-forwarded-for']?.toString().split(',')[0].trim() ||
+    request.headers['x-vercel-forwarded-for']?.toString() ||
+    'unknown';
+
   const rateLimit = checkRateLimit(clientIP);
-  
+
   if (!rateLimit.allowed) {
     const retryAfter = Math.ceil((rateLimit.resetAt - Date.now()) / 1000);
     response.setHeader('Retry-After', retryAfter);
     response.setHeader('X-RateLimit-Limit', RATE_LIMIT);
     response.setHeader('X-RateLimit-Remaining', 0);
-    return response.status(429).json({ 
+    return response.status(429).json({
       error: 'Too many requests. Please try again later.',
-      retryAfter 
+      retryAfter,
     });
   }
 
@@ -248,13 +283,13 @@ export default async function handler(request: VercelRequest, response: VercelRe
   const parseResult = quoteEmailSchema.safeParse(request.body);
 
   if (!parseResult.success) {
-    const errors = parseResult.error.issues.map(issue => ({
+    const errors = parseResult.error.issues.map((issue) => ({
       field: issue.path.join('.'),
       message: issue.message,
     }));
-    return response.status(400).json({ 
+    return response.status(400).json({
       error: 'Validation failed',
-      details: errors 
+      details: errors,
     });
   }
 
@@ -265,14 +300,14 @@ export default async function handler(request: VercelRequest, response: VercelRe
 
   if (!emailResult.success) {
     console.error('Failed to send quote email:', emailResult.error);
-    return response.status(500).json({ 
-      error: emailResult.error || 'Failed to process request' 
+    return response.status(500).json({
+      error: emailResult.error || 'Failed to process request',
     });
   }
 
   // Return success
-  return response.status(200).json({ 
-    success: true, 
-    message: 'Quote request submitted successfully' 
+  return response.status(200).json({
+    success: true,
+    message: 'Quote request submitted successfully',
   });
 }

@@ -66,7 +66,7 @@ const EnhancedQuoteModal: React.FC<EnhancedQuoteModalProps> = ({
   const [error, setError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [phoneError, setPhoneError] = useState('');
-  
+
   // Honeypot field for spam protection (hidden from real users)
   const [honeypot, setHoneypot] = useState('');
 

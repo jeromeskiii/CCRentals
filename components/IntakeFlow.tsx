@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  Check, 
-  ScanLine, 
-  AlertTriangle, 
-  ShieldCheck,
-  Loader2
-} from 'lucide-react';
+import { Check, ScanLine, AlertTriangle, ShieldCheck, Loader2 } from 'lucide-react';
 
 // --- THEME CONFIGURATION (Injected CSS) ---
 const ThemeProvider = () => (
@@ -72,16 +66,29 @@ interface ButtonProps {
   disabled?: boolean;
 }
 
-const Button = ({ children, variant = "primary", className = "", onClick, disabled }: ButtonProps) => {
-  const base = "h-12 px-8 flex items-center justify-center text-xs font-mono uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed border";
+const Button = ({
+  children,
+  variant = 'primary',
+  className = '',
+  onClick,
+  disabled,
+}: ButtonProps) => {
+  const base =
+    'h-12 px-8 flex items-center justify-center text-xs font-mono uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed border';
   const variants = {
-    primary: "bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--primary)] hover:bg-[var(--accent)] hover:border-[var(--accent)]",
-    outline: "bg-transparent border-[var(--foreground)] text-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)]",
-    ghost: "border-transparent text-[var(--foreground)] hover:bg-[var(--secondary)]"
+    primary:
+      'bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--primary)] hover:bg-[var(--accent)] hover:border-[var(--accent)]',
+    outline:
+      'bg-transparent border-[var(--foreground)] text-[var(--foreground)] hover:bg-[var(--foreground)] hover:text-[var(--background)]',
+    ghost: 'border-transparent text-[var(--foreground)] hover:bg-[var(--secondary)]',
   };
-  
+
   return (
-    <button onClick={onClick} disabled={disabled} className={`${base} ${variants[variant]} ${className}`}>
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`${base} ${variants[variant]} ${className}`}
+    >
       {children}
     </button>
   );
@@ -101,7 +108,7 @@ const Input = ({ label, placeholder, value, onChange, autoFocus }: InputProps) =
       {label}
     </label>
     <div className="relative">
-      <input 
+      <input
         autoFocus={autoFocus}
         type="text"
         value={value}
@@ -119,9 +126,9 @@ const Input = ({ label, placeholder, value, onChange, autoFocus }: InputProps) =
 const StepIndicator = ({ current, total }: { current: number; total: number }) => (
   <div className="flex items-center gap-1 mb-12">
     {Array.from({ length: total }).map((_, i) => (
-      <div 
-        key={i} 
-        className={`h-0.5 transition-all duration-500 ${i < current ? 'w-8 bg-[var(--accent)]' : i === current ? 'w-16 bg-[var(--foreground)]' : 'w-4 bg-[var(--border)]'}`} 
+      <div
+        key={i}
+        className={`h-0.5 transition-all duration-500 ${i < current ? 'w-8 bg-[var(--accent)]' : i === current ? 'w-16 bg-[var(--foreground)]' : 'w-4 bg-[var(--border)]'}`}
       />
     ))}
   </div>
@@ -131,8 +138,8 @@ const StepIndicator = ({ current, total }: { current: number; total: number }) =
 
 // STEP 1: IDENTIFY (Matches "Sign Up" clean layout)
 const StepIdentify = ({ onNext }: { onNext: (data: { id: string }) => void }) => {
-  const [id, setId] = useState("");
-  
+  const [id, setId] = useState('');
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="mb-8">
@@ -145,14 +152,14 @@ const StepIdentify = ({ onNext }: { onNext: (data: { id: string }) => void }) =>
       </div>
 
       <div className="space-y-8 max-w-md">
-        <Input 
-          label="Asset Identifier" 
-          placeholder="CCR-XXXX" 
+        <Input
+          label="Asset Identifier"
+          placeholder="CCR-XXXX"
           value={id}
           onChange={(e) => setId(e.target.value)}
           autoFocus
         />
-        
+
         <div className="flex gap-4">
           <Button onClick={() => onNext({ id })} className="flex-1">
             Proceed to Inspection
@@ -162,7 +169,7 @@ const StepIdentify = ({ onNext }: { onNext: (data: { id: string }) => void }) =>
           </Button>
         </div>
       </div>
-      
+
       <div className="mt-12 pt-6 border-t border-[var(--border)] flex gap-8 text-[10px] font-mono uppercase text-stone-400">
         <span className="flex items-center gap-2">
           <ShieldCheck className="w-3 h-3" /> Secure Gateway
@@ -176,13 +183,24 @@ const StepIdentify = ({ onNext }: { onNext: (data: { id: string }) => void }) =>
 };
 
 // STEP 2: CONDITION (Matches "Getting to know you" form)
-const StepCondition = ({ onNext, data }: { onNext: (data: { condition: string }) => void; data: any }) => {
+const StepCondition = ({
+  onNext,
+  data,
+}: {
+  onNext: (data: { condition: string }) => void;
+  data: any;
+}) => {
   const [selected, setSelected] = useState<string | null>(null);
 
   const conditions = [
     { id: 'mint', label: 'Mint / A+', desc: 'No visible wear. Lenses pristine.' },
     { id: 'good', label: 'Standard / B', desc: 'Minor cosmetic scuffs. Functional.' },
-    { id: 'damaged', label: 'Damaged / F', desc: 'Needs repair. Flag for maintenance.', alert: true },
+    {
+      id: 'damaged',
+      label: 'Damaged / F',
+      desc: 'Needs repair. Flag for maintenance.',
+      alert: true,
+    },
   ];
 
   return (
@@ -198,13 +216,16 @@ const StepCondition = ({ onNext, data }: { onNext: (data: { condition: string })
             key={c.id}
             onClick={() => setSelected(c.id)}
             className={`text-left p-4 border transition-all relative group
-              ${selected === c.id 
-                ? 'border-[var(--accent)] bg-white shadow-lg scale-[1.01]' 
-                : 'border-[var(--border)] bg-transparent hover:border-stone-400'
+              ${
+                selected === c.id
+                  ? 'border-[var(--accent)] bg-white shadow-lg scale-[1.01]'
+                  : 'border-[var(--border)] bg-transparent hover:border-stone-400'
               }`}
           >
             <div className="flex justify-between items-center mb-1">
-              <span className={`font-mono text-xs uppercase tracking-widest ${selected === c.id ? 'text-[var(--accent)]' : 'text-stone-500'}`}>
+              <span
+                className={`font-mono text-xs uppercase tracking-widest ${selected === c.id ? 'text-[var(--accent)]' : 'text-stone-500'}`}
+              >
                 {c.id === 'damaged' && <AlertTriangle className="w-3 h-3 inline mr-2" />}
                 {c.label}
               </span>
@@ -217,7 +238,11 @@ const StepCondition = ({ onNext, data }: { onNext: (data: { condition: string })
 
       <div className="space-y-4">
         <Input label="Notes (Optional)" placeholder="Missing caps, scratches..." />
-        <Button onClick={() => selected && onNext({ condition: selected })} disabled={!selected} className="w-full">
+        <Button
+          onClick={() => selected && onNext({ condition: selected })}
+          disabled={!selected}
+          className="w-full"
+        >
           Submit Report
         </Button>
       </div>
@@ -238,10 +263,11 @@ const StepSuccess = ({ onReset }: { onReset: () => void }) => (
         <Check className="w-8 h-8 text-[var(--accent)]" />
       </div>
     </div>
-    
+
     <h2 className="text-4xl font-serif italic mb-2">Asset Processed</h2>
     <p className="text-stone-500 mb-8 font-sans">
-      Return logged successfully. Digital receipt generated.<br/>
+      Return logged successfully. Digital receipt generated.
+      <br />
       Asset is now locked for maintenance cycle.
     </p>
 
@@ -250,9 +276,7 @@ const StepSuccess = ({ onReset }: { onReset: () => void }) => (
         <span>Transaction ID</span>
         <span>{new Date().toLocaleTimeString()}</span>
       </div>
-      <div className="font-mono text-sm truncate">
-        TX-992-881-ALPHA
-      </div>
+      <div className="font-mono text-sm truncate">TX-992-881-ALPHA</div>
     </div>
 
     <Button onClick={onReset} variant="outline" className="mx-auto">
@@ -269,19 +293,22 @@ export default function IntakeFlow() {
 
   const next = (data: any) => {
     setFormData({ ...formData, ...data });
-    setStep(s => s + 1);
+    setStep((s) => s + 1);
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 relative">
       <ThemeProvider />
-      
+
       {/* Background Grid Texture */}
-      <div className="absolute inset-0 z-[-1]" style={{ 
-        backgroundImage: 'radial-gradient(var(--border) 1px, transparent 1px)', 
-        backgroundSize: '40px 40px',
-        opacity: 0.5
-      }} />
+      <div
+        className="absolute inset-0 z-[-1]"
+        style={{
+          backgroundImage: 'radial-gradient(var(--border) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+          opacity: 0.5,
+        }}
+      />
 
       {/* Main Card Container */}
       <div className="w-full max-w-2xl bg-[var(--card)] border border-[var(--border)] shadow-2xl p-8 md:p-16 relative">
@@ -297,11 +324,11 @@ export default function IntakeFlow() {
         </div>
 
         <div className="mt-12">
-           {step < 2 && <StepIndicator current={step} total={3} />}
-           
-           {step === 0 && <StepIdentify onNext={next} />}
-           {step === 1 && <StepCondition onNext={next} data={formData} />}
-           {step === 2 && <StepSuccess onReset={() => setStep(0)} />}
+          {step < 2 && <StepIndicator current={step} total={3} />}
+
+          {step === 0 && <StepIdentify onNext={next} />}
+          {step === 1 && <StepCondition onNext={next} data={formData} />}
+          {step === 2 && <StepSuccess onReset={() => setStep(0)} />}
         </div>
       </div>
 

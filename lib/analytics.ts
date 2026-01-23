@@ -1,6 +1,6 @@
 /**
  * Analytics Service - Lightweight, privacy-focused event tracking
- * 
+ *
  * Features:
  * - Simple track(event, props) API
  * - Privacy-friendly (no PII, optional anonymization)
@@ -46,7 +46,7 @@ let currentConfig: AnalyticsConfig = { ...defaultConfig };
 function initFromEnv(): void {
   const stored = safeLocalStorage.getItem<Partial<AnalyticsConfig>>('analytics_config', {});
   currentConfig = { ...defaultConfig, ...stored };
-  
+
   // Check for Vercel Analytics
   if (typeof window !== 'undefined' && (window as { _vercel?: unknown })._vercel) {
     currentConfig.provider = 'vercel';
@@ -67,7 +67,7 @@ export function track(event: string, props?: Record<string, unknown>): void {
   };
 
   eventQueue.push(trackedEvent);
-  
+
   // Schedule batch flush
   if (!flushTimeout) {
     flushTimeout = setTimeout(flushEvents, 1000); // Flush after 1 second of inactivity
@@ -109,7 +109,7 @@ async function trackVercel(events: TrackedEvent[]): Promise<void> {
   // Vercel Analytics automatically tracks page views
   // For custom events, we can use the beacon API
   const endpoint = currentConfig.customEndpoint || '/api/analytics';
-  
+
   if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
     events.forEach((event) => {
       const payload = JSON.stringify(event);
@@ -130,7 +130,7 @@ async function trackVercel(events: TrackedEvent[]): Promise<void> {
 async function trackPlausible(events: TrackedEvent[]): Promise<void> {
   // Plausible uses a script-based approach, but we can also use their API
   const domain = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
-  
+
   events.forEach((event) => {
     // Use Plausible's event API
     const payload = {
@@ -154,7 +154,7 @@ async function trackPlausible(events: TrackedEvent[]): Promise<void> {
 // Custom endpoint tracking
 async function trackCustom(events: TrackedEvent[]): Promise<void> {
   if (!currentConfig.customEndpoint) return;
-  
+
   await fetch(currentConfig.customEndpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -165,10 +165,10 @@ async function trackCustom(events: TrackedEvent[]): Promise<void> {
 // Remove PII from event props
 function anonymizeProps(props?: Record<string, unknown>): Record<string, unknown> | undefined {
   if (!props) return undefined;
-  
+
   const piiFields = ['email', 'phone', 'name', 'address', 'ip'];
   const sanitized: Record<string, unknown> = {};
-  
+
   Object.entries(props).forEach(([key, value]) => {
     const lowerKey = key.toLowerCase();
     if (piiFields.some((pii) => lowerKey.includes(pii))) {
@@ -178,7 +178,7 @@ function anonymizeProps(props?: Record<string, unknown>): Record<string, unknown
       sanitized[key] = value;
     }
   });
-  
+
   return sanitized;
 }
 
@@ -193,29 +193,29 @@ function logDebug(...args: unknown[]): void {
 export const analytics = {
   // Initialize analytics
   init: initFromEnv,
-  
+
   // Track events
   track,
-  
+
   // Flush pending events (call this before page unload)
   flush: flushEvents,
-  
+
   // Configure analytics
   configure: (config: Partial<AnalyticsConfig>): void => {
     currentConfig = { ...currentConfig, ...config };
     safeLocalStorage.setItem('analytics_config', currentConfig);
     logDebug('Analytics configured:', currentConfig);
   },
-  
+
   // Enable/disable tracking
   enable: (): void => {
     currentConfig.enabled = true;
   },
-  
+
   disable: (): void => {
     currentConfig.enabled = false;
   },
-  
+
   // Check if analytics is enabled
   isEnabled: (): boolean => currentConfig.enabled,
 };
@@ -228,33 +228,33 @@ export const analyticsEvents = {
   phoneClicked: 'phone_clicked',
   emailClicked: 'email_clicked',
   directionClicked: 'directions_clicked',
-  
+
   // Form interactions
   formStarted: 'form_started',
   formStepCompleted: 'form_step_completed',
   formSubmitted: 'form_submitted',
   formSuccess: 'form_success',
-  
+
   // Service interactions
   serviceViewed: 'service_viewed',
   serviceClicked: 'service_clicked',
   serviceExpanded: 'service_expanded',
-  
+
   // Map interactions
   mapLoaded: 'map_loaded',
   zipCodeChecked: 'zip_code_checked',
   zipCodeServed: 'zip_code_served',
   zipCodeNotServed: 'zip_code_not_served',
-  
+
   // Navigation
   pageViewed: 'page_viewed',
   sectionViewed: 'section_viewed',
-  
+
   // Error tracking
   errorOccurred: 'error_occurred',
 } as const;
 
-export type AnalyticsEvent = typeof analyticsEvents[keyof typeof analyticsEvents];
+export type AnalyticsEvent = (typeof analyticsEvents)[keyof typeof analyticsEvents];
 
 // Auto-initialize on import
 if (typeof window !== 'undefined') {

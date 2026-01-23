@@ -19,7 +19,7 @@ class RateLimiter {
     const now = Date.now();
     const windowStart = now - this.windowMs;
 
-    this.requests = this.requests.filter(timestamp => timestamp > windowStart);
+    this.requests = this.requests.filter((timestamp) => timestamp > windowStart);
 
     const remaining = this.maxRequests - this.requests.length;
 
@@ -32,7 +32,7 @@ class RateLimiter {
         remaining: 0,
         resetAt,
         retryAfter: Math.ceil((resetAt - now) / 1000),
-        message: `Rate limit exceeded. Retry after ${Math.ceil((resetAt - now) / 1000)} seconds`
+        message: `Rate limit exceeded. Retry after ${Math.ceil((resetAt - now) / 1000)} seconds`,
       };
     }
 
@@ -41,7 +41,7 @@ class RateLimiter {
     return {
       allowed: true,
       remaining: remaining - 1,
-      resetAt: now + this.windowMs
+      resetAt: now + this.windowMs,
     };
   }
 
@@ -53,7 +53,7 @@ class RateLimiter {
     const now = Date.now();
     const windowStart = now - this.windowMs;
 
-    const recentRequests = this.requests.filter(timestamp => timestamp > windowStart);
+    const recentRequests = this.requests.filter((timestamp) => timestamp > windowStart);
 
     return {
       enabled: this.enabled,
@@ -61,7 +61,7 @@ class RateLimiter {
       windowMs: this.windowMs,
       currentRequests: recentRequests.length,
       remaining: Math.max(0, this.maxRequests - recentRequests.length),
-      resetAt: now + this.windowMs
+      resetAt: now + this.windowMs,
     };
   }
 }

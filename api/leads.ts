@@ -52,7 +52,8 @@ export default async function handler(request: VercelRequest, response: VercelRe
   }
 
   // Rate limiting by IP
-  const clientIP = request.headers['x-forwarded-for']?.toString().split(',')[0].trim() ||
+  const clientIP =
+    request.headers['x-forwarded-for']?.toString().split(',')[0].trim() ||
     request.headers['x-vercel-forwarded-for']?.toString() ||
     'unknown';
 

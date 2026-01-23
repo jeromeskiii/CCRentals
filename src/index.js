@@ -1,37 +1,37 @@
-import fs from "node:fs";
-import path from "node:path";
-import { execSync } from "node:child_process";
+import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
 
 const LANGUAGE_MAP = {
-  ".js": "javascript",
-  ".ts": "typescript",
-  ".jsx": "javascript",
-  ".tsx": "typescript",
-  ".py": "python",
-  ".go": "go",
-  ".rs": "rust",
-  ".cpp": "cpp",
-  ".c": "c",
-  ".java": "java"
+  '.js': 'javascript',
+  '.ts': 'typescript',
+  '.jsx': 'javascript',
+  '.tsx': 'typescript',
+  '.py': 'python',
+  '.go': 'go',
+  '.rs': 'rust',
+  '.cpp': 'cpp',
+  '.c': 'c',
+  '.java': 'java',
 };
 
 export function detectLanguage(filename) {
   const ext = path.extname(filename).toLowerCase();
-  return LANGUAGE_MAP[ext] || "unknown";
+  return LANGUAGE_MAP[ext] || 'unknown';
 }
 
 function isGitRepo(dir) {
-  const gitDir = path.join(dir, ".git");
+  const gitDir = path.join(dir, '.git');
   return fs.existsSync(gitDir);
 }
 
 function getGitFiles(dir) {
   try {
-    const files = execSync("git ls-files", {
+    const files = execSync('git ls-files', {
       cwd: dir,
-      encoding: "utf8"
+      encoding: 'utf8',
     });
-    return files.split("\n").filter(f => f.length > 0);
+    return files.split('\n').filter((f) => f.length > 0);
   } catch (error) {
     return [];
   }
@@ -43,19 +43,19 @@ function getFileStats(filePath, baseDir) {
     const stats = fs.statSync(fullPath);
     return {
       size: stats.size,
-      mtime: stats.mtime.toISOString()
+      mtime: stats.mtime.toISOString(),
     };
   } catch (error) {
     return {
       size: 0,
-      mtime: null
+      mtime: null,
     };
   }
 }
 
 function generateRepoManifest(dir) {
   const manifest = {
-    schema_version: "1.0",
+    schema_version: '1.0',
     generated_at: new Date().toISOString(),
     root_dir: dir,
     is_git_repo: false,
@@ -64,8 +64,8 @@ function generateRepoManifest(dir) {
       total_files: 0,
       total_size: 0,
       languages: {},
-      directories: {}
-    }
+      directories: {},
+    },
   };
 
   if (isGitRepo(dir)) {
@@ -76,13 +76,13 @@ function generateRepoManifest(dir) {
     for (const file of gitFiles) {
       const stats = getFileStats(file, dir);
       const language = detectLanguage(file);
-      const dirname = path.dirname(file) || ".";
+      const dirname = path.dirname(file) || '.';
 
       const fileEntry = {
         path: file,
         language,
         size: stats.size,
-        mtime: stats.mtime
+        mtime: stats.mtime,
       };
 
       manifest.files.push(fileEntry);
@@ -98,15 +98,15 @@ function generateRepoManifest(dir) {
 }
 
 export function attachRepoToSession(sessionDir, workingDir) {
-  const manifestPath = path.join(sessionDir, "repo_manifest.json");
+  const manifestPath = path.join(sessionDir, 'repo_manifest.json');
 
   const manifest = generateRepoManifest(workingDir);
-  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
+  fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
 
   return {
     attached: manifest.is_git_repo,
     manifest,
-    manifestPath
+    manifestPath,
   };
 }
 

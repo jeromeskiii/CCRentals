@@ -1,6 +1,6 @@
 /**
  * Dark Mode Hook - Persisted theme preference with system fallback
- * 
+ *
  * Features:
  * - localStorage persistence
  * - System preference detection (prefers-color-scheme)
@@ -22,7 +22,7 @@ interface DarkModeReturn {
 // Get stored theme or null if not set
 function getStoredTheme(): Theme | null {
   if (typeof window === 'undefined') return null;
-  
+
   try {
     const stored = localStorage.getItem('theme');
     if (stored === 'light' || stored === 'dark') {
@@ -37,16 +37,16 @@ function getStoredTheme(): Theme | null {
 // Get system preference
 function getSystemPreference(): 'light' | 'dark' {
   if (typeof window === 'undefined') return 'light';
-  
+
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 // Apply theme to document
 function applyTheme(theme: Theme): void {
   if (typeof document === 'undefined') return;
-  
+
   const root = document.documentElement;
-  
+
   if (theme === 'dark') {
     root.classList.add('dark');
   } else {
@@ -62,23 +62,23 @@ export function useDarkMode(): DarkModeReturn {
   // Initialize on mount
   useEffect(() => {
     setMounted(true);
-    
+
     // Get system preference
     const systemPref = getSystemPreference();
     setSystemPreference(systemPref);
-    
+
     // Get stored preference or use system
     const stored = getStoredTheme();
     const theme: Theme = stored || systemPref;
-    
+
     setIsDark(theme === 'dark');
     applyTheme(theme);
-    
+
     // Listen for system preference changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e: MediaQueryListEvent) => {
       setSystemPreference(e.matches ? 'dark' : 'light');
-      
+
       // Only update if user hasn't set a preference
       if (!getStoredTheme()) {
         const newTheme = e.matches ? 'dark' : 'light';
@@ -86,17 +86,17 @@ export function useDarkMode(): DarkModeReturn {
         applyTheme(newTheme);
       }
     };
-    
+
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
   const toggle = useCallback(() => {
     const newTheme = isDark ? 'light' : 'dark';
-    
+
     setIsDark(!isDark);
     applyTheme(newTheme);
-    
+
     // Persist preference
     try {
       localStorage.setItem('theme', newTheme);
@@ -108,7 +108,7 @@ export function useDarkMode(): DarkModeReturn {
   const setTheme = useCallback((theme: Theme) => {
     setIsDark(theme === 'dark');
     applyTheme(theme);
-    
+
     // Persist preference
     try {
       localStorage.setItem('theme', theme);
@@ -132,13 +132,13 @@ export function useDarkMode(): DarkModeReturn {
 // Hook for components that need to know current theme (SSR safe)
 export function useTheme(): 'light' | 'dark' {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  
+
   useEffect(() => {
     const stored = getStoredTheme();
     const systemPref = getSystemPreference();
     setTheme(stored || systemPref);
   }, []);
-  
+
   return theme;
 }
 

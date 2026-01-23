@@ -78,17 +78,13 @@ export const api = {
         }
 
         if (response.status === 400) {
-          throw new APIError(
-            'Validation failed',
-            'VALIDATION_ERROR',
-            400,
-            responseData.details
-          );
+          throw new APIError('Validation failed', 'VALIDATION_ERROR', 400, responseData.details);
         }
 
         // Generic error as fallback
         throw new APIError(
-          responseData.error || 'Unable to submit your request. Please try again or contact support.',
+          responseData.error ||
+            'Unable to submit your request. Please try again or contact support.',
           'SUBMISSION_ERROR',
           response.status,
           responseData
