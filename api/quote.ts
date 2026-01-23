@@ -1,4 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 import { z } from 'zod';
 
 // HTML escape helper function
@@ -12,10 +14,6 @@ function escapeHtml(text: string): string {
   };
   return text.replace(/[&<>"']/g, (char) => map[char]);
 }
-
-// Rate limiting store (in-memory, resets on cold start)
-// For production, use Upstash Redis: https://upstash.com/docs/redis/features/ratelimit
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 
 const RATE_LIMIT = 5; // requests
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour in ms
@@ -211,25 +209,30 @@ async function sendQuoteEmail(data: QuoteEmailData): Promise<{ success: boolean;
   }
 }
 
-// Check rate limit for IP
-function checkRateLimit(ip: string): { allowed: boolean; remaining: number; resetAt: number } {
-  const now = Date.now();
-  const record = rateLimitStore.get(ip);
+let rateLimiter: Ratelimit | null | undefined;
 
-  if (!record || now > record.resetAt) {
-    // New or expired - create new record
-    const newRecord = { count: 1, resetAt: now + RATE_LIMIT_WINDOW };
-    rateLimitStore.set(ip, newRecord);
-    return { allowed: true, remaining: RATE_LIMIT - 1, resetAt: newRecord.resetAt };
+const getRateLimiter = () => {
+  if (rateLimiter !== undefined) {
+    return rateLimiter;
   }
 
-  if (record.count >= RATE_LIMIT) {
-    return { allowed: false, remaining: 0, resetAt: record.resetAt };
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) {
+    rateLimiter = null;
+    return rateLimiter;
   }
 
-  record.count++;
-  return { allowed: true, remaining: RATE_LIMIT - record.count, resetAt: record.resetAt };
-}
+  rateLimiter = new Ratelimit({
+    redis: new Redis({ url, token }),
+    limiter: Ratelimit.slidingWindow(RATE_LIMIT, `${RATE_LIMIT_WINDOW} ms`),
+    analytics: true,
+    prefix: 'ccrentals:quote',
+  });
+
+  return rateLimiter;
+};
 
 export default async function handler(request: VercelRequest, response: VercelResponse) {
   // Handle CORS preflight
@@ -263,12 +266,19 @@ export default async function handler(request: VercelRequest, response: VercelRe
     request.headers['x-vercel-forwarded-for']?.toString() ||
     'unknown';
 
-  const rateLimit = checkRateLimit(clientIP);
+  const limiter = getRateLimiter();
 
-  if (!rateLimit.allowed) {
-    const retryAfter = Math.ceil((rateLimit.resetAt - Date.now()) / 1000);
+  if (!limiter) {
+    console.error('Upstash Redis credentials not configured');
+    return response.status(500).json({ error: 'Server not configured' });
+  }
+
+  const rateLimit = await limiter.limit(`ip:${clientIP}`);
+
+  if (!rateLimit.success) {
+    const retryAfter = Math.ceil((rateLimit.reset - Date.now()) / 1000);
     response.setHeader('Retry-After', retryAfter);
-    response.setHeader('X-RateLimit-Limit', RATE_LIMIT);
+    response.setHeader('X-RateLimit-Limit', rateLimit.limit);
     response.setHeader('X-RateLimit-Remaining', 0);
     return response.status(429).json({
       error: 'Too many requests. Please try again later.',
@@ -276,7 +286,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
     });
   }
 
-  response.setHeader('X-RateLimit-Limit', RATE_LIMIT);
+  response.setHeader('X-RateLimit-Limit', rateLimit.limit);
   response.setHeader('X-RateLimit-Remaining', rateLimit.remaining);
 
   // Validate request body

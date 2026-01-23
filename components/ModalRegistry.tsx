@@ -17,17 +17,20 @@ import ConfirmationModal from './ConfirmationModal';
 interface ModalConfig {
   component: ComponentType<any>;
   propMapping?: Record<string, string>; // componentProp -> modalState prop key
+  openProp?: 'open' | 'isOpen';
 }
 
 const MODAL_REGISTRY: Record<string, ModalConfig> = {
   'service-request': {
     component: ServiceRequestModal,
+    openProp: 'open',
     propMapping: {
       source: 'source',
     },
   },
   'enhanced-quote': {
     component: EnhancedQuoteModal,
+    openProp: 'open',
     propMapping: {
       prefilledQuote: 'prefilledQuote',
     },
@@ -65,7 +68,7 @@ export const ModalRegistry: FC = () => {
 
         // Build props for the modal component
         const componentProps: Record<string, any> = {
-          isOpen: true,
+          [config.openProp ?? 'isOpen']: modalState.open,
           onClose: () => closeModal(modalId),
         };
 

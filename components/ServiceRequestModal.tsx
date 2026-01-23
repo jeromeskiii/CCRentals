@@ -1,6 +1,6 @@
 import React, { useId, useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { api } from '../lib/api';
+import { api, APIError } from '../lib/api';
 import { leadSubmissionSchema, sanitizeInput, sanitizeEmail } from '../lib/validation';
 import { useModalA11y } from '../hooks/useModalA11y';
 
@@ -58,6 +58,36 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
 
   const timeWindowOptions = ['ASAP', 'Morning', 'Afternoon', 'Evening'];
 
+  const extractFieldErrors = (details: unknown) => {
+    const errors: { name?: string; email?: string; phone?: string } = {};
+
+    if (!Array.isArray(details)) {
+      return errors;
+    }
+
+    details.forEach((detail) => {
+      if (!detail || typeof detail !== 'object') return;
+
+      const field =
+        'field' in detail && typeof detail.field === 'string'
+          ? detail.field
+          : 'path' in detail && Array.isArray(detail.path)
+            ? detail.path[0]
+            : undefined;
+
+      const message =
+        'message' in detail && typeof detail.message === 'string' ? detail.message : undefined;
+
+      if (!message || typeof field !== 'string') return;
+
+      if (field === 'name' || field === 'email' || field === 'phone') {
+        errors[field] = message;
+      }
+    });
+
+    return errors;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -111,7 +141,23 @@ const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({ open, onClose
       }, 3000);
     } catch (err) {
       console.error('Submission error:', err);
-      setError('Something went wrong. Please try again or call us directly.');
+      if (err instanceof APIError) {
+        if (err.code === 'RATE_LIMITED') {
+          setError(err.message || 'Too many requests. Please wait and try again.');
+        } else if (err.code === 'DUPLICATE_ENTRY') {
+          setError('It looks like we already received this request. We’ll be in touch soon.');
+        } else if (err.code === 'VALIDATION_ERROR') {
+          const errors = extractFieldErrors(err.details);
+          if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+          }
+          setError('Please correct the highlighted fields and try again.');
+        } else {
+          setError(err.message || 'Something went wrong. Please try again or call us directly.');
+        }
+      } else {
+        setError('Something went wrong. Please try again or call us directly.');
+      }
     } finally {
       setIsSubmitting(false);
     }

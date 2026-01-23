@@ -1,32 +1,36 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
-import { leadSubmissionSchema } from '../lib/validation';
-
-// Rate limiting store (in-memory, resets on cold start)
-// For production, use Upstash Redis: https://upstash.com/docs/redis/features/ratelimit
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+import { leadSubmissionSchema, sanitizeInput } from '../lib/validation';
 
 const RATE_LIMIT = 5; // requests
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour in ms
 
-// Check rate limit for IP
-function checkRateLimit(ip: string): { allowed: boolean; remaining: number; resetAt: number } {
-  const now = Date.now();
-  const record = rateLimitStore.get(ip);
+let rateLimiter: Ratelimit | null | undefined;
 
-  if (!record || now > record.resetAt) {
-    const newRecord = { count: 1, resetAt: now + RATE_LIMIT_WINDOW };
-    rateLimitStore.set(ip, newRecord);
-    return { allowed: true, remaining: RATE_LIMIT - 1, resetAt: newRecord.resetAt };
+const getRateLimiter = () => {
+  if (rateLimiter !== undefined) {
+    return rateLimiter;
   }
 
-  if (record.count >= RATE_LIMIT) {
-    return { allowed: false, remaining: 0, resetAt: record.resetAt };
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) {
+    rateLimiter = null;
+    return rateLimiter;
   }
 
-  record.count++;
-  return { allowed: true, remaining: RATE_LIMIT - record.count, resetAt: record.resetAt };
-}
+  rateLimiter = new Ratelimit({
+    redis: new Redis({ url, token }),
+    limiter: Ratelimit.slidingWindow(RATE_LIMIT, `${RATE_LIMIT_WINDOW} ms`),
+    analytics: true,
+    prefix: 'ccrentals:leads',
+  });
+
+  return rateLimiter;
+};
 
 export default async function handler(request: VercelRequest, response: VercelResponse) {
   // Handle CORS preflight
@@ -57,12 +61,19 @@ export default async function handler(request: VercelRequest, response: VercelRe
     request.headers['x-vercel-forwarded-for']?.toString() ||
     'unknown';
 
-  const rateLimit = checkRateLimit(clientIP);
+  const limiter = getRateLimiter();
 
-  if (!rateLimit.allowed) {
-    const retryAfter = Math.ceil((rateLimit.resetAt - Date.now()) / 1000);
+  if (!limiter) {
+    console.error('Upstash Redis credentials not configured');
+    return response.status(500).json({ error: 'Server not configured' });
+  }
+
+  const rateLimit = await limiter.limit(`ip:${clientIP}`);
+
+  if (!rateLimit.success) {
+    const retryAfter = Math.ceil((rateLimit.reset - Date.now()) / 1000);
     response.setHeader('Retry-After', retryAfter);
-    response.setHeader('X-RateLimit-Limit', RATE_LIMIT);
+    response.setHeader('X-RateLimit-Limit', rateLimit.limit);
     response.setHeader('X-RateLimit-Remaining', 0);
     return response.status(429).json({
       error: 'Too many requests. Please try again later.',
@@ -70,7 +81,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
     });
   }
 
-  response.setHeader('X-RateLimit-Limit', RATE_LIMIT);
+  response.setHeader('X-RateLimit-Limit', rateLimit.limit);
   response.setHeader('X-RateLimit-Remaining', rateLimit.remaining);
 
   const parseResult = leadSubmissionSchema.safeParse(request.body);
@@ -86,7 +97,18 @@ export default async function handler(request: VercelRequest, response: VercelRe
     });
   }
 
-  const { website_url, ...leadData } = parseResult.data;
+  const leadData = parseResult.data;
+
+  const sanitizedLeadData = {
+    ...leadData,
+    name: sanitizeInput(leadData.name),
+    notes: leadData.notes ? sanitizeInput(leadData.notes) : undefined,
+    service_type: leadData.service_type ? sanitizeInput(leadData.service_type) : undefined,
+    preferred_time_window: leadData.preferred_time_window
+      ? sanitizeInput(leadData.preferred_time_window)
+      : undefined,
+    source: leadData.source ? sanitizeInput(leadData.source) : undefined,
+  };
 
   const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -100,7 +122,7 @@ export default async function handler(request: VercelRequest, response: VercelRe
     auth: { persistSession: false },
   });
 
-  const { error } = await supabase.from('leads').insert([leadData]);
+  const { error } = await supabase.from('leads').insert([sanitizedLeadData]);
 
   if (error) {
     console.error('API Error creating lead:', error);
