@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import ErrorBoundary from './components/ErrorBoundary';
 import Navbar from './components/template/Navbar';
 import Footer from './components/template/Footer';
@@ -83,6 +84,7 @@ const App: React.FC = () => {
       <AppContent />
       {/* Centralized modal outlet */}
       <ModalRegistry />
+      <SpeedInsights />
     </ModalManagerProvider>
   );
 };
